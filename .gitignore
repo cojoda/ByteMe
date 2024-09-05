@@ -1,0 +1,16 @@
+# directories
+.vscode
+test
+
+# directory contents
+bin/*
+obj/*
+
+# files
+lexer.cpp
+args.cpp
+mg.f24
+mg.c
+
+# file types
+*.s
