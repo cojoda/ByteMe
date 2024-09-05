@@ -16,6 +16,8 @@ std::string ofilename;
 
 int main(int argc, char** argv) {
 
+    // arg lexing
+
     // aggregate argv into a single string
     std::string args;
     for(int i = 1; i < argc; i++) args.append(argv[i]).append(" ");
@@ -28,6 +30,8 @@ int main(int argc, char** argv) {
     FlexLexer* arg_flexlexer = new ArgsFlexLexer(arg_istream, arg_ostream);
     arg_flexlexer->yylex();
     delete arg_flexlexer;
+
+    // compiler lexing
 
     // i/ostreams for primary lexer using filenames from args
     std::ifstream lex_ifstream(ifilename);
