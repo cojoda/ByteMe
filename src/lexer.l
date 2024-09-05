@@ -22,7 +22,7 @@ extern std::ofstream lex_ofstream;
 \/\/.*\n                { TOKEN("COMMENT"); lex_ofstream << '\n'; } 
 
     /* white space */
-[\t\n ]+;
+[\t\n\f ]+;
 
 
 
@@ -115,6 +115,8 @@ while           { TOKEN("K_WHILE");         }
 "("         { TOKEN("LPAREN");      }
 ")"         { TOKEN("RPAREN");      }
 ","         { TOKEN("COMMA");       }
+
+
 
 
     /* end of file */
