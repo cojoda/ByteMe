@@ -13,12 +13,17 @@ extern std::string ofilename;
 %option c++
 %option prefix="Args"
 
+S               [^\t\n\f ]
+FILE           ({S}+|\\[ ])
+
 
 %%
     /* input file */
-\-i\ [a-zA-Z0-9]+\.f24    { ifilename = yytext + 3; }
+\-i\ {FILE}+                { ifilename = yytext + 3; }
 
     /* output file */
-\-o\ [a-zA-Z0-9]+\.[a-zA-Z0-9\.*]   { ofilename = yytext + 3; }
+\-o\ {FILE}+                { ofilename = yytext + 3; }
+
+{S}                         { /* unknown args handling */ }
 
 %%
