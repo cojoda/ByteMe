@@ -1,3 +1,9 @@
+.DEFAULT_GOAL := bin/byte
+
+test: bin/byte mg.f24
+	bin/byte -i mg.f24 -o mg.s
+	diff -y mg.s mg.t
+
 bin/byte: obj/byte.o obj/lexer.o obj/args.o
 	g++ -o bin/byte obj/byte.o obj/lexer.o obj/args.o
 
