@@ -10,6 +10,7 @@ obj/*
 lexer.cpp
 args.cpp
 mg.c
+mg.f24
 
 # file types
 *.s
