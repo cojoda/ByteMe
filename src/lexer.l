@@ -1,6 +1,8 @@
 %{
 #include <iostream>
 #include <fstream>
+#include "keyword.h"
+#include "token.h"
 
 extern std::ofstream lex_ofstream;
 
@@ -44,45 +46,14 @@ extern std::ofstream lex_ofstream;
 [0-9]+\.[0-9]*[d]                   { TOKEN("UNKNOWN_DCONSTANT", yytext);   }
 [0-9]+\.[0.9]?d[0-9\+\-]?[0-9]      { TOKEN("", yytext);                    }
 
-
-
-    /* keywords */
-do              { TOKEN("K_DO");            }
-double          { TOKEN("K_DOUBLE");        }
-else            { TOKEN("K_ELSE");          }
-exit            { TOKEN("K_EXIT");          }
-function        { TOKEN("K_FUNCTION");      }
-if              { TOKEN("K_IF");            }
-integer         { TOKEN("K_INTEGER");       }
-print_double    { TOKEN("K_PRINT_DOUBLE");  }
-print_integer   { TOKEN("K_PRINT_INTEGER"); }
-program         { TOKEN("K_PROGRAM");       }
-print_string    { TOKEN("K_PRINT_STRING");  }
-read_double     { TOKEN("K_READ_DOUBLE");   }
-procedure       { TOKEN("K_PROCEDURE");     }
-read_integer    { TOKEN("K_READ_INTEGER");  }
-read_string     { TOKEN("K_READ_STRING");   }
-return          { TOKEN("K_RETURN");        }
-string          { TOKEN("K_STRING");        }
-then            { TOKEN("K_THEN");          }
-until           { TOKEN("K_UNTIL");         }
-while           { TOKEN("K_WHILE");         }
-
-
-
-    /* IDENTIFIER */
-[a-zA-Z_$][a-zA-Z0-9_$]*     { TOKEN("IDENTIFIER", yytext); }
-
-
-
     /* arithmetic operators */
 "+"         { TOKEN("PLUS");        }
 "++"        { TOKEN("INCREMENT");   }
-"/"         { TOKEN("DIVIDE");      }
 "-"         { TOKEN("MINUS");       }
 "--"        { TOKEN("DECREMENT");   }
-"%"         { TOKEN("MOD");         }
 "*"         { TOKEN("MULTIPLY");    }
+"/"         { TOKEN("DIVIDE");      }
+"%"         { TOKEN("MOD");         }
 
     /* logic operators */
 "||"        { TOKEN("DOR");     }
@@ -116,8 +87,20 @@ while           { TOKEN("K_WHILE");         }
 ")"         { TOKEN("RPAREN");      }
 ","         { TOKEN("COMMA");       }
 
+    /* keywords & identifiers */
+[a-zA-Z_$][a-zA-Z0-9_$]* { 
 
-
+    // TODO: change back type to Token
+    std::string word = keyword_to_token((std::string)yytext);
+    
+    // TODO: change type back to Token
+    if (word == "IDENTIFIER") {
+        TOKEN(word, yytext);
+    }
+    else {
+        TOKEN( word);
+    }
+}
 
     /* end of file */
 <<EOF>>     { TOKEN("EOF"); return 0; }
