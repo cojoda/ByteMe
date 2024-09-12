@@ -9,6 +9,7 @@
 
 // TODO: codomain type back to Token (by removing quotes from codomain).
 // I set it this way for debugging so I can print to std::cout
+// std::unordered_map<std::string, Token> keyword_map = {
 std::unordered_map<std::string, std::string> keyword_map = {
     {"do", "K_DO"},
     {"double", "K_DOUBLE"},
@@ -32,16 +33,20 @@ std::unordered_map<std::string, std::string> keyword_map = {
     {"while", "K_WHILE"}
 };
 
-// TODO: change back return type to Token
+// TODO: change back Token
+// Token keyword_to_token(const std::string& keyword)
 std::string keyword_to_token(const std::string& keyword)
 {
+    // TODO: change back to Token
+    // std::unordered_map<std::string, Token>::iterator mapping = keyword_map.find(keyword);
     std::unordered_map<std::string, std::string>::iterator mapping = keyword_map.find(keyword);
     if (mapping != keyword_map.end()) {
         return mapping->second; // found
     }
     
     // not found, is identifier?
-    // TODO: change back to Token (by removing quotes)
+    // TODO: change back to Token
+    // return IDENTIFIER
     return "IDENTIFIER";
 }
 
