@@ -31,18 +31,43 @@ int main(int argc, char** argv) {
     arg_flexlexer->yylex();
     delete arg_flexlexer;
 
-    // compiler lexing
+    // Compiler lexing
+    std::istream* input_stream;
+    std::ifstream file_input_stream;
+    
+    // Check if input filename is provided (from args)
+    if (!ifilename.empty()) {
+        // Open input file
+        file_input_stream.open(ifilename);
+        if (!file_input_stream.is_open()) {
+            std::cerr << "Error: Could not open input file: " << ifilename << std::endl;
+            return EXIT_FAILURE;
+        }
+        input_stream = &file_input_stream;  // Use file input
+    } else {
+        // Use standard input (e.g., redirection from shell)
+        input_stream = &std::cin;
+    }
 
-    // i/ostreams for primary lexer using filenames from args
-    std::ifstream lex_ifstream(ifilename);
-    lex_ofstream = std::ofstream(ofilename);
+    // Open output file for writing
+    lex_ofstream.open(ofilename);
+    if (!lex_ofstream.is_open()) {
+        std::cerr << "Error: Could not open output file: " << ofilename << std::endl;
+        return EXIT_FAILURE;
+    }
 
-    // lex input file
-    FlexLexer* flexlexer = new ByteFlexLexer(lex_ifstream, lex_ofstream);
+    // Lex input using the primary lexer
+    FlexLexer* flexlexer = new ByteFlexLexer(*input_stream, lex_ofstream);
     flexlexer->yylex();
     delete flexlexer;
 
+    // Close output file
     lex_ofstream.close();
+    
+    // Close input file if it was used
+    if (file_input_stream.is_open()) {
+        file_input_stream.close();
+    }
 
     exit(EXIT_SUCCESS);
 }
