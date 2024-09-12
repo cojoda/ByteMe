@@ -14,7 +14,7 @@ obj/lexer.o: src/lexer.cpp
 	g++ -std=c++11 -o obj/lexer.o -c src/lexer.cpp
 
 src/lexer.cpp: src/lexer.l src/token.h src/keyword.h
-	flex -o src/lexer.cpp -i src/lexer.l 
+	flex -p -o src/lexer.cpp -i src/lexer.l 
 
 obj/args.o: src/args.cpp
 	g++ -std=c++11 -o obj/args.o -c src/args.cpp
