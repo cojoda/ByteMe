@@ -26,8 +26,6 @@ extern std::ofstream lex_ofstream;
     /* white space */
 [\t\n\f ]+;
 
-
-
     /* SCONSTANT */
 [\"][^\"]*[\"]                      { TOKEN("SCONSTANT", yytext); }
 
@@ -35,16 +33,7 @@ extern std::ofstream lex_ofstream;
 [0-9]+                              { TOKEN("ICONSTANT", yytext); }
 
     /* DCONSTANT */
-        /* mantisa only */
-[0-9]+\.[0-9]*                      { TOKEN("DCONSTANT", yytext); }
-\.[0-9]+                            { TOKEN("DCONSTANT", yytext); }
-        /* mantisa + exponent */
-[0-9]+\.[0-9]*d(\+|\-)?[0-9]+       { TOKEN("DCONSTANT", yytext); }
-\.[0-9]+d(\+|\-)?[0-9]              { TOKEN("DCONSTANT", yytext); }
-
-        /* incorrectly formatted */
-[0-9]+\.[0-9]*[d]                   { TOKEN("UNKNOWN_DCONSTANT", yytext);   }
-[0-9]+\.[0.9]?d[0-9\+\-]?[0-9]      { TOKEN("", yytext);                    }
+-?(([0-9]+.?[0-9]*)|([0-9]*.?[0-9]+))([dD][-+]?[0-9]+)?     { TOKEN("DCONSTANT", yytext); }
 
     /* arithmetic operators */
 "+"         { TOKEN("PLUS");        }
