@@ -14,7 +14,7 @@ extern std::string ofilename;
 %option prefix="Args"
 
 S               [^\t\n\f ]
-FILE           ({S}+|\\[ ])
+FILE            ({S}+|\\[ ])
 
 
 %%
