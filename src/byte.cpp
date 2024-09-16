@@ -6,13 +6,19 @@
 #include <FlexLexer.h>
 #undef yyFlexLexer
 
+
+
 #include <fstream>
 #include <sstream>
 #include <string>
 
+
+
 std::ofstream lex_ofstream;
 std::string ifilename;
 std::string ofilename;
+
+
 
 int main(int argc, char** argv) {
 
