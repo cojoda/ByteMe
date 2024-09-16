@@ -4,6 +4,8 @@
 #include "keyword.h"
 #include "token.h"
 
+
+
 extern std::ofstream lex_ofstream;
 
 #define TOKEN1(arg1)        lex_ofstream << "<" << arg1 << ">";
@@ -36,26 +38,26 @@ extern std::ofstream lex_ofstream;
 -?(([0-9]+.?[0-9]*)|([0-9]*.?[0-9]+))([dD][-+]?[0-9]+)?     { TOKEN("DCONSTANT", yytext); }
 
     /* arithmetic operators */
-"+"         { TOKEN("PLUS");        }
-"++"        { TOKEN("INCREMENT");   }
-"-"         { TOKEN("MINUS");       }
-"--"        { TOKEN("DECREMENT");   }
-"*"         { TOKEN("MULTIPLY");    }
-"/"         { TOKEN("DIVIDE");      }
-"%"         { TOKEN("MOD");         }
+"+"         { TOKEN("PLUS");      }
+"++"        { TOKEN("INCREMENT"); }
+"-"         { TOKEN("MINUS");     }
+"--"        { TOKEN("DECREMENT"); }
+"*"         { TOKEN("MULTIPLY");  }
+"/"         { TOKEN("DIVIDE");    }
+"%"         { TOKEN("MOD");       }
 
     /* logic operators */
-"||"        { TOKEN("DOR");     }
-"&&"        { TOKEN("DAND");    }
-"!"         { TOKEN("NOT");     }
+"||"        { TOKEN("DOR");  }
+"&&"        { TOKEN("DAND"); }
+"!"         { TOKEN("NOT");  }
 
     /* comparision operators */
-"=="        { TOKEN("DEQ");     }
-">="        { TOKEN("GEQ");     }
-">"         { TOKEN("GT");      }
-"<="        { TOKEN("LEQ");     }
-"<"         { TOKEN("LT");      }
-"!="        { TOKEN("NE");      }
+"=="        { TOKEN("DEQ"); }
+">="        { TOKEN("GEQ"); }
+">"         { TOKEN("GT");  }
+"<="        { TOKEN("LEQ"); }
+"<"         { TOKEN("LT");  }
+"!="        { TOKEN("NE");  }
 
     /* assignment operators */
 ":="        { TOKEN("ASSIGN");          }
@@ -66,15 +68,15 @@ extern std::ofstream lex_ofstream;
 "%="        { TOKEN("ASSIGN_MOD");      }
 
     /* punctuation */
-"."         { TOKEN("PERIOD");      }
-";"         { TOKEN("SEMI");        }
-"["         { TOKEN("LBRACKET");    }
-"]"         { TOKEN("RBRACKET");    }
-"{"         { TOKEN("LCURLY");      }
-"}"         { TOKEN("RCURLY");      }
-"("         { TOKEN("LPAREN");      }
-")"         { TOKEN("RPAREN");      }
-","         { TOKEN("COMMA");       }
+"."         { TOKEN("PERIOD");   }
+";"         { TOKEN("SEMI");     }
+"["         { TOKEN("LBRACKET"); }
+"]"         { TOKEN("RBRACKET"); }
+"{"         { TOKEN("LCURLY");   }
+"}"         { TOKEN("RCURLY");   }
+"("         { TOKEN("LPAREN");   }
+")"         { TOKEN("RPAREN");   }
+","         { TOKEN("COMMA");    }
 
     /* keywords & identifiers */
 [a-zA-Z_$][a-zA-Z0-9_$]* { 
