@@ -7,7 +7,6 @@
 #include "token.h"
 
 
-
 extern std::ofstream lex_ofstream;
 
 #define TOKEN1(arg1)        lex_ofstream << "<" << arg1 << ">";
@@ -17,9 +16,11 @@ extern std::ofstream lex_ofstream;
 %}
 
 
+
 %option noyywrap
 %option c++
 %option prefix="Byte"
+
 
 
 ALPHA   [a-zA-Z]
@@ -32,77 +33,76 @@ d       [0-9]
 D       [^0-9]
 
 
+
 %%
 
 
+
     /* comments */
-\/\/.*\n                { TOKEN("COMMENT"); lex_ofstream << '\n'; } 
+\/\/.*\n                                        { TOKEN("COMMENT"); lex_ofstream << '\n'; } 
+
 
 
     /* white space */
 {s}+;
 
 
+
     /* SCONSTANT */
-[\"][^\"]*[\"]                      { TOKEN("SCONSTANT", yytext); }
+[\"][^\"]*[\"]                                  { TOKEN("SCONSTANT", yytext); }
+
 
 
     /* ICONSTANT */
-{d}+                              { TOKEN("ICONSTANT", yytext); }
+{d}+                                            { TOKEN("ICONSTANT", yytext); }
+
 
 
     /* DCONSTANT */
-(({d}+\.?{d}*)|({d}*\.?{d}+))(EXP[+-]?{d}+)?     { TOKEN("DCONSTANT", yytext); }
+(({d}+\.?{d}*)|({d}*\.?{d}+))({EXP}[+-]?{d}+)?  { TOKEN("DCONSTANT", yytext); }
+
 
 
     /* operators */
-{S}{S}? {
+{S}{S}?                                         {
     // TODO: change back type to Token
     std::string word = operation_to_token((std::string)yytext);
     
     // TODO: change type back to Token
-    if (word == "REJECT") {
-        REJECT;
-    }
-    else {
-        TOKEN(word);
-    }
+    if (word == "REJECT") REJECT
+    else                  TOKEN(word);
 }
 
 
+
     /* punctuation */
-{S} {
+{S}                                             {
     // TODO: change back type to Token
     std::string word = punctuation_to_token((std::string)yytext);
     
     // TODO: change type back to Token
-    if (word == "REJECT") {
-        REJECT;
-    }
-    else {
-        TOKEN(word);
-    }
+    if (word == "REJECT") REJECT
+    else                  TOKEN(word);
 }
 
 
+
     /* keywords & identifiers */
-(ALPHA|[_$])({w}|[$])* { 
+({ALPHA}|[_$])({w}|[$])*                        { 
 
     // TODO: change back type to Token
     std::string word = keyword_to_token((std::string)yytext);
     
     // TODO: change type back to Token
-    if (word == "IDENTIFIER") {
-        TOKEN(word, yytext);
-    }
-    else {
-        TOKEN(word);
-    }
+    if (word == "IDENTIFIER") TOKEN(word, yytext)
+    else                      TOKEN(word);
 }
 
 
+
     /* end of file */
-<<EOF>>     { TOKEN("EOF"); return 0; }
+<<EOF>>                                         { TOKEN("EOF"); return 0; }
+
 
 
 %%
