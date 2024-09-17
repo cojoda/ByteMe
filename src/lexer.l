@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include "keyword.h"
+#include "operation.h"
+#include "punctuation.h"
 #include "token.h"
 
 
@@ -20,66 +22,71 @@ extern std::ofstream lex_ofstream;
 %option prefix="Byte"
 
 
+ALPHA   [a-zA-Z]
+EXP     [dD]
+s       [ \t\n\r\f\v]
+S       [^ \t\n\r\f\v]
+w       [a-zA-Z0-9_]
+W       [^a-zA-Z0-9_]
+d       [0-9]
+D       [^0-9]
+
+
 %%
+
 
     /* comments */
 \/\/.*\n                { TOKEN("COMMENT"); lex_ofstream << '\n'; } 
 
+
     /* white space */
-[\t\n\f ]+;
+{s}+;
+
 
     /* SCONSTANT */
 [\"][^\"]*[\"]                      { TOKEN("SCONSTANT", yytext); }
 
+
     /* ICONSTANT */
-[0-9]+                              { TOKEN("ICONSTANT", yytext); }
+{d}+                              { TOKEN("ICONSTANT", yytext); }
+
 
     /* DCONSTANT */
--?(([0-9]+.?[0-9]*)|([0-9]*.?[0-9]+))([dD][-+]?[0-9]+)?     { TOKEN("DCONSTANT", yytext); }
+(({d}+\.?{d}*)|({d}*\.?{d}+))(EXP[+-]?{d}+)?     { TOKEN("DCONSTANT", yytext); }
 
-    /* arithmetic operators */
-"+"         { TOKEN("PLUS");      }
-"++"        { TOKEN("INCREMENT"); }
-"-"         { TOKEN("MINUS");     }
-"--"        { TOKEN("DECREMENT"); }
-"*"         { TOKEN("MULTIPLY");  }
-"/"         { TOKEN("DIVIDE");    }
-"%"         { TOKEN("MOD");       }
 
-    /* logic operators */
-"||"        { TOKEN("DOR");  }
-"&&"        { TOKEN("DAND"); }
-"!"         { TOKEN("NOT");  }
+    /* operators */
+{S}{S}? {
+    // TODO: change back type to Token
+    std::string word = operation_to_token((std::string)yytext);
+    
+    // TODO: change type back to Token
+    if (word == "REJECT") {
+        REJECT;
+    }
+    else {
+        TOKEN(word);
+    }
+}
 
-    /* comparision operators */
-"=="        { TOKEN("DEQ"); }
-">="        { TOKEN("GEQ"); }
-">"         { TOKEN("GT");  }
-"<="        { TOKEN("LEQ"); }
-"<"         { TOKEN("LT");  }
-"!="        { TOKEN("NE");  }
-
-    /* assignment operators */
-":="        { TOKEN("ASSIGN");          }
-"+="        { TOKEN("ASSIGN_PLUS");     }
-"-="        { TOKEN("ASSIGN_MINUS");    }
-"*="        { TOKEN("ASSIGN_MULTIPLY"); }
-"/="        { TOKEN("ASSIGN_DIVIDE");   }
-"%="        { TOKEN("ASSIGN_MOD");      }
 
     /* punctuation */
-"."         { TOKEN("PERIOD");   }
-";"         { TOKEN("SEMI");     }
-"["         { TOKEN("LBRACKET"); }
-"]"         { TOKEN("RBRACKET"); }
-"{"         { TOKEN("LCURLY");   }
-"}"         { TOKEN("RCURLY");   }
-"("         { TOKEN("LPAREN");   }
-")"         { TOKEN("RPAREN");   }
-","         { TOKEN("COMMA");    }
+{S} {
+    // TODO: change back type to Token
+    std::string word = punctuation_to_token((std::string)yytext);
+    
+    // TODO: change type back to Token
+    if (word == "REJECT") {
+        REJECT;
+    }
+    else {
+        TOKEN(word);
+    }
+}
+
 
     /* keywords & identifiers */
-[a-zA-Z_$][a-zA-Z0-9_$]* { 
+(ALPHA|[_$])({w}|[$])* { 
 
     // TODO: change back type to Token
     std::string word = keyword_to_token((std::string)yytext);
@@ -89,9 +96,10 @@ extern std::ofstream lex_ofstream;
         TOKEN(word, yytext);
     }
     else {
-        TOKEN( word);
+        TOKEN(word);
     }
 }
+
 
     /* end of file */
 <<EOF>>     { TOKEN("EOF"); return 0; }
