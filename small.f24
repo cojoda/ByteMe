@@ -1,0 +1,26 @@
+program one
+integer globali;
+string globals;
+double globald;
+
+integer function main(string arg)
+{
+    integer mi;
+    string ms;
+    double md;
+    if (mi == 0) then
+    {
+        read_integer(arg);
+    }
+    else
+    {
+        integer counter := 10
+        while (counter > 0)
+        {
+            md += 0.2
+        }
+    }
+
+
+    return 0;
+}
