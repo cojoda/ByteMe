@@ -3,7 +3,6 @@
 
 
 
-#include <iostream>
 #include <unordered_map>
 #include <string>
 
@@ -29,10 +28,8 @@ std::string punctuation_to_token(const std::string& keyword)
 {
     std::unordered_map<std::string, std::string>::iterator mapping = punctuation_map.find(keyword);
     if (mapping != punctuation_map.end()) 
-        return mapping->second; // found
-    
-    // not found, is identifier?
-    return "REJECT";
+        return mapping->second;  // Return token if found
+    return "REJECT";             // Otherwise REJECT
 }
 
 

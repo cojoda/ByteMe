@@ -5,6 +5,7 @@
 
 enum Token
 {
+    // Keywords
     K_DO,
     K_DOUBLE,
     K_ELSE,
@@ -25,10 +26,12 @@ enum Token
     K_THEN,
     K_UNTIL,
     K_WHILE,
+    // Names & Literal Types
     IDENTIFIER,
     DCONSTANT,
     ICONSTANT,
     SCONSTANT,
+    // Operators
     PLUS,
     INCREMENT,
     MINUS,
@@ -51,6 +54,7 @@ enum Token
     ASSIGN_MULTIPLY,
     ASSIGN_DIVIDE,
     ASSIGN_MOD,
+    // Punctuation
     PERIOD,
     SEMI,
     LBRACKET,

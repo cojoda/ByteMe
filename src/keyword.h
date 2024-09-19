@@ -3,7 +3,6 @@
 
 
 
-#include <iostream>
 #include <unordered_map>
 #include <string>
 
@@ -39,12 +38,10 @@ std::unordered_map<std::string, std::string> keyword_map = {
 std::string keyword_to_token(const std::string& keyword)
 {
     std::unordered_map<std::string, std::string>::iterator mapping = keyword_map.find(keyword);
-
-    if (mapping != keyword_map.end()) 
-        return mapping->second; // found
     
-    // not found, is identifier
-    return "IDENTIFIER";
+    if (mapping != keyword_map.end())
+        return mapping->second;  // Return token if found
+    return "IDENTIFIER";         // Otherwise, return identifier
 }
 
 
