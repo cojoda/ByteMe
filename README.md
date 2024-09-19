@@ -51,7 +51,7 @@ These are located in the `./example/` directory and are independent of other gro
 ## Testing Environments
 This project was tested using:
 - **LLVM/Clang and Flex** from the macOS Xcode command line tools.
-- **GCC and Flex** from the Pop!_OS
+- **GCC and Flex** from Pop!_OS
 
 Both environments successfully built and executed the lexer.
 
