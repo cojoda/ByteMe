@@ -24,7 +24,7 @@ This will:
 - Generate an executable named `byte` in the `bin/` directory.
 
 ### Running the Lexer
-Once built, you can run the lexer on example files located in the `./example/` directory. For example, to process the `brain.f24` file and display the output, use the following command:
+Once built, you can run the lexer on example files located in the `examples/` directory. For example, to process the `brain.f24` file and display the output, use the following command:
 
 ```bash
 ./bin/byte < ./example/brain.f24
@@ -57,7 +57,7 @@ The project includes three example `.f24` files:
 - `small.f24`
 - `mg.f24`
 
-These are located in the `./example/` directory.
+These are located in the `examples/` directory.
 
 ## Testing Environments
 This project was tested using:
