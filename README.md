@@ -23,12 +23,24 @@ This will:
 - Compile the `byte.cpp` file along with the other dependencies.
 - Generate an executable that will process `.f24` source files.
 
+Ah, I see! Let me adjust it:
+
+---
+
 ### Running the Lexer
-Once built, you can run the lexer on example files located in the `./example/` directory. For example, to process the `brain.f24` file, use the following command:
+Once built, you can run the lexer on example files located in the `./example/` directory. For example, to process the `brain.f24` file and display the output, use the following command:
 
 ```bash
-./lexer ./example/brain.f24
+./bin/byte < ./example/brain.f24
 ```
+
+If you'd like to save the output to a file, you can redirect it like this:
+
+```bash
+./bin/byte < ./example/brain.f24 > output.txt
+```
+
+You can replace `brain.f24` with `small.f24` or `mg.f24` to run other examples.
 
 Replace `brain.f24` with `small.f24` or `mg.f24` to run other examples.
 
