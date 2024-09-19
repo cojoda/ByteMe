@@ -10,7 +10,7 @@ You can find the project repository at: [ByteMe GitHub](https://github.com/cojod
 
 ### Prerequisites
 - `flex` should be installed on your system.
-- A C++ compiler (such as `g++`) is required to compile the generated lexer code.
+- A C++ compiler (such as `g++` or `clang`) is required to compile the generated lexer code.
 
 ### Building the Lexer
 To build the lexer, simply use the provided Makefile. Run the following command in the root directory of the project:
@@ -39,6 +39,13 @@ The project includes three example `.f24` files:
 - `mg.f24`
 
 These are located in the `./example/` directory and are independent of other groups.
+
+## Testing Environments
+This project was tested using:
+- **LLVM/Clang and Flex** from the macOS Xcode command line tools.
+- **GCC and Flex** from the Pop!_OS
+
+Both environments successfully built and executed the lexer.
 
 ## Flex and Yacc Information
 The `flex` lexical analyzer is used in this project. If you need more information or want to download `flex`, you can find it at:  
