@@ -1,6 +1,6 @@
 %{
-#include <iostream>
-#include <fstream>
+// #include <iostream>
+// #include <fstream>
 #include "keyword.h"
 #include "operation.h"
 #include "punctuation.h"
@@ -42,7 +42,7 @@ PUN     [.;\[\]{}(),]
 
 
     /* comments */
-\/\/.*\n                                        { TOKEN("COMMENT"); yyout << '\n'; } 
+\/\/.*\n                                        { /*TOKEN("COMMENT"); yyout << '\n'; */} 
 
 
 
@@ -110,7 +110,7 @@ PUN     [.;\[\]{}(),]
 }
 
 
-.   {TOKEN("UNKNOWN");}
+    /* .   {TOKEN("UNKNOWN");} */
 
 
 

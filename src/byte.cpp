@@ -1,6 +1,6 @@
-#define yyFlexLexer ArgsFlexLexer
-#include <FlexLexer.h>
-#undef yyFlexLexer
+// #define yyFlexLexer ArgsFlexLexer
+// #include <FlexLexer.h>
+// #undef yyFlexLexer
 
 #define yyFlexLexer ByteFlexLexer
 #include <FlexLexer.h>
@@ -8,15 +8,15 @@
 
 
 
-#include <fstream>
-#include <sstream>
-#include <string>
+// #include <fstream>
+// #include <sstream>
+// #include <string>
 
 
 
-std::ofstream lex_ofstream;
-std::string ifilename;
-std::string ofilename;
+// std::ofstream lex_ofstream;
+// std::string ifilename;
+// std::string ofilename;
 
 
 
