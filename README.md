@@ -57,7 +57,7 @@ The project includes three example `.f24` files:
 - `small.f24`
 - `mg.f24`
 
-These are located in the `./example/` directory and are independent of other groups.
+These are located in the `./example/` directory.
 
 ## Testing Environments
 This project was tested using:
@@ -66,9 +66,9 @@ This project was tested using:
 
 Both environments successfully built and executed the lexer.
 
-## Flex and Yacc Information
+## Flex Information
 The `flex` lexical analyzer is used in this project. If you need more information or want to download `flex`, you can find it at:  
-- URL: https://github.com/cojoda/ByteMe.git
+- URL: https://github.com/westes/flex
 
 ## Makefile
 The provided `Makefile` automates the build, clean, and test processes. Key commands include:
