@@ -23,14 +23,14 @@
 
 
 /* Character Class Macros */
-a       [a-zA-Z]
-d       [0-9]
-D       [^{d}]
-w       [{a}{d}_]
-W       [^{w}]
+a   [a-zA-Z]
+EXP     [dD]
 s       [ \t\n\r\f\v]
-S       [^{s}]
-EXP     [eE]
+S       [^ \t\n\r\f\v]
+w       [a-zA-Z0-9_]
+W       [^a-zA-Z0-9_]
+d       [0-9]
+D       [^0-9]
 OP1     [-+*/%=|&!><:]
 OP2     [-+=|&]
 PUN     [.;\[\]{}(),]
@@ -67,7 +67,7 @@ PUN     [.;\[\]{}(),]
 
 
     /* Operators */
-{OP1}{OP2}?                     {
+{OP1}{OP2}?                 {
     std::string word = operation_to_token((std::string)yytext);
     
     if (word == "REJECT") TOKEN("UNKNOWN")
@@ -77,7 +77,7 @@ PUN     [.;\[\]{}(),]
 
 
     /* Punctuation */
-{PUN}                           {
+{PUN}                       {
     std::string word = punctuation_to_token((std::string)yytext);
     
     if (word == "REJECT") TOKEN("UNKNOWN")
