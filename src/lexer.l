@@ -42,12 +42,12 @@ PUN     [.;\[\]{}(),]
 
 
     /* comments */
-\/\/.*\n                                        { /*TOKEN("COMMENT"); yyout << '\n'; */} 
+\/\/.*\n                                        { yyout << '\n'; } 
 
 
 
     /* white space */
-{s}+;
+{s}+                                            { yyout << yytext;}
 
 
 
@@ -67,55 +67,36 @@ PUN     [.;\[\]{}(),]
 
 
     /* operators */
-{OP1}{OP2}?                                         {
-    // TODO: change back type to Token
+{OP1}{OP2}?                     {
     std::string word = operation_to_token((std::string)yytext);
     
-    // TODO: change type back to Token
-    if (word == "REJECT") {
-        TOKEN("UNKNOWN");
-    }
-    else {
-        TOKEN(word);
-    }
+    if (word == "REJECT") TOKEN("UNKNOWN")
+    else                  TOKEN(word);
 }
 
 
 
     /* punctuation */
-{PUN}                                             {
-    // TODO: change back type to Token
+{PUN}                           {
     std::string word = punctuation_to_token((std::string)yytext);
     
-    // TODO: change type back to Token
-    if (word == "REJECT") {
-        TOKEN("UNKNOWN");
-    }
-    else {
-        TOKEN(word);
-    }
+    if (word == "REJECT") TOKEN("UNKNOWN")
+    else                  TOKEN(word);
 }
 
 
-
     /* keywords & identifiers */
-({ALPHA}|[_$])({w}|[$])*                        { 
-
-    // TODO: change back type to Token
+({ALPHA}|[_$])({w}|[$])*        { 
     std::string word = keyword_to_token((std::string)yytext);
     
-    // TODO: change type back to Token
     if (word == "IDENTIFIER") TOKEN(word, yytext)
     else                      TOKEN(word);
 }
 
 
-    /* .   {TOKEN("UNKNOWN");} */
-
-
 
     /* end of file */
-<<EOF>>                                         { TOKEN("EOF"); return 0; }
+<<EOF>>             { TOKEN("EOF"); return 0; }
 
 
 
