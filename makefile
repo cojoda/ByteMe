@@ -2,7 +2,7 @@
 
 test: clean bin/byte mg.f24
 	bin/byte -i mg.f24 -o mg.s
-	diff -y mg.s mg.t --suppress-common-lines
+	diff mg.s mg.t --suppress-common-lines > test.txt
 
 bin/byte: obj/byte.o obj/lexer.o obj/args.o bin
 	g++ -std=c++11 -o bin/byte obj/byte.o obj/lexer.o obj/args.o

@@ -31,6 +31,9 @@ w       [a-zA-Z0-9_]
 W       [^a-zA-Z0-9_]
 d       [0-9]
 D       [^0-9]
+OP1     [-+*/%=|&!><:]
+OP2     [-+=|&]
+PUN     [.;\[\]{}(),]
 
 
 
@@ -64,25 +67,33 @@ D       [^0-9]
 
 
     /* operators */
-{S}{S}?                                         {
+{OP1}{OP2}?                                         {
     // TODO: change back type to Token
     std::string word = operation_to_token((std::string)yytext);
     
     // TODO: change type back to Token
-    if (word == "REJECT") REJECT
-    else                  TOKEN(word);
+    if (word == "REJECT") {
+        TOKEN("UNKNOWN");
+    }
+    else {
+        TOKEN(word);
+    }
 }
 
 
 
     /* punctuation */
-{S}                                             {
+{PUN}                                             {
     // TODO: change back type to Token
     std::string word = punctuation_to_token((std::string)yytext);
     
     // TODO: change type back to Token
-    if (word == "REJECT") REJECT
-    else                  TOKEN(word);
+    if (word == "REJECT") {
+        TOKEN("UNKNOWN");
+    }
+    else {
+        TOKEN(word);
+    }
 }
 
 
