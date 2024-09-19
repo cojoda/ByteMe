@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := bin/byte
 
 test: clean bin/byte mg.f24
-	bin/byte -i mg.f24 -o mg.s
+	bin/byte < mg.f24 > mg.s
 	diff mg.s mg.t --suppress-common-lines > test.txt
 
 bin/byte: obj/byte.o obj/lexer.o obj/args.o bin

@@ -7,10 +7,10 @@
 #include "token.h"
 
 
-extern std::ofstream lex_ofstream;
+// extern std::ofstream lex_ofstream;
 
-#define TOKEN1(arg1)        lex_ofstream << "<" << arg1 << ">";
-#define TOKEN2(arg1, arg2)  lex_ofstream << "<" << arg1 << "," << arg2 << ">";
+#define TOKEN1(arg1)        yyout << "<" << arg1 << ">";
+#define TOKEN2(arg1, arg2)  yyout << "<" << arg1 << "," << arg2 << ">";
 #define GET_TOKEN(_1, _2, NAME, ...) NAME
 #define TOKEN(...) GET_TOKEN(__VA_ARGS__, TOKEN2, TOKEN1) (__VA_ARGS__)
 %}
@@ -42,7 +42,7 @@ PUN     [.;\[\]{}(),]
 
 
     /* comments */
-\/\/.*\n                                        { TOKEN("COMMENT"); lex_ofstream << '\n'; } 
+\/\/.*\n                                        { TOKEN("COMMENT"); yyout << '\n'; } 
 
 
 
