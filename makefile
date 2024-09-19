@@ -38,13 +38,24 @@ $(BINDIR) $(OBJDIR):
 # Clean generated files and directories
 .PHONY: clean
 clean:
-	rm -rf $(BINDIR) $(OBJDIR) $(SRCDIR)/lexer.cpp *.s
+	rm -rf $(BINDIR) $(OBJDIR) $(SRCDIR)/lexer.cpp $(TEST_DIR) *.s
+
+# Test files
+TEST_FILES := $(wildcard examples/*.f24)
+TEST_OUTPUT_DIR := $(TEST_DIR)/outputs
+TEST_OUTPUTS := $(patsubst examples/%.f24,$(TEST_OUTPUT_DIR)/%.txt,$(TEST_FILES))
 
 # Test target
 .PHONY: test
-test: $(BINDIR)/byte
-	mkdir -p $(TEST_DIR)
-	$(BINDIR)/byte < mg.f24 > $(TEST_DIR)/output.txt
+test: $(TEST_OUTPUTS)
+
+# Pattern rule for test outputs
+$(TEST_OUTPUT_DIR)/%.txt: examples/%.f24 $(BINDIR)/byte | $(TEST_OUTPUT_DIR)
+	$(BINDIR)/byte < $< > $@
+
+# Create test output directory
+$(TEST_OUTPUT_DIR):
+	mkdir -p $@
 
 # Include dependency files
 -include $(DEPS)
