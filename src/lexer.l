@@ -1,5 +1,7 @@
 %{
     // Include necessary header files
+    #include <string>
+
     #include "keyword.h"
     #include "operation.h"
     #include "punctuation.h"
@@ -22,13 +24,13 @@
 
 /* Character Class Macros */
 a       [a-zA-Z]
-EXP     [eE]
-s       [ \t\n\r\f\v]
-S       [^{s}]
 d       [0-9]
 D       [^{d}]
 w       [{a}{d}_]
 W       [^{w}]
+s       [ \t\n\r\f\v]
+S       [^{s}]
+EXP     [eE]
 OP1     [-+*/%=|&!><:]
 OP2     [-+=|&]
 PUN     [.;\[\]{}(),]
