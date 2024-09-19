@@ -1,6 +1,8 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
+
+
 enum Token
 {
     K_DO,
@@ -60,5 +62,7 @@ enum Token
     COMMA,
     UNKNOWN
 };
+
+
 
 #endif // TOKEN_H
