@@ -110,6 +110,9 @@ PUN     [.;\[\]{}(),]
 }
 
 
+.   {TOKEN("UNKNOWN");}
+
+
 
     /* end of file */
 <<EOF>>                                         { TOKEN("EOF"); return 0; }
