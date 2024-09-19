@@ -23,10 +23,6 @@ This will:
 - Compile the `byte.cpp` file along with the other dependencies.
 - Generate an executable that will process `.f24` source files.
 
-Ah, I see! Let me adjust it:
-
----
-
 ### Running the Lexer
 Once built, you can run the lexer on example files located in the `./example/` directory. For example, to process the `brain.f24` file and display the output, use the following command:
 
