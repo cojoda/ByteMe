@@ -27,13 +27,13 @@ This will:
 Once built, you can run the lexer on example files located in the `examples/` directory. For example, to process the `brain.f24` file and display the output, use the following command:
 
 ```bash
-./bin/byte < ./example/brain.f24
+./bin/byte < examples/brain.f24
 ```
 
 If you'd like to save the output to a file, you can redirect it like this:
 
 ```bash
-./bin/byte < ./example/brain.f24 > output.txt
+./bin/byte < examples/brain.f24 > output.txt
 ```
 
 You can replace `brain.f24` with `small.f24` or `mg.f24` to run other examples.
