@@ -8,7 +8,7 @@ CXXFLAGS := -std=c++11 -MMD -MP
 BINDIR       := bin
 OBJDIR       := obj
 SRCDIR       := src
-TEST_OUTPUT_DIR := test_output
+TEST_DIR := test
 
 # Source files (explicitly listed)
 SRCS    := byte.cpp lexer.cpp
@@ -43,8 +43,8 @@ clean:
 # Test target
 .PHONY: test
 test: $(BINDIR)/byte
-	mkdir -p $(TEST_OUTPUT_DIR)
-	$(BINDIR)/byte < mg.f24 > $(TEST_OUTPUT_DIR)/output.txt
+	mkdir -p $(TEST_DIR)
+	$(BINDIR)/byte < mg.f24 > $(TEST_DIR)/output.txt
 
 # Include dependency files
 -include $(DEPS)
