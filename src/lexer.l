@@ -10,8 +10,9 @@
     // Macros for token output
     #define TOKEN1(arg1)        yyout << "<" << arg1 << ">";
     #define TOKEN2(arg1, arg2)  yyout << "<" << arg1 << "," << arg2 << ">";
+    
     #define GET_TOKEN(_1, _2, NAME, ...) NAME
-    #define TOKEN(...) GET_TOKEN(__VA_ARGS__, TOKEN2, TOKEN1) (__VA_ARGS__)
+    #define TOKEN(...)                   GET_TOKEN(__VA_ARGS__, TOKEN2, TOKEN1) (__VA_ARGS__)
 %}
 
 
