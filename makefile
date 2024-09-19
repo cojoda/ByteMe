@@ -1,34 +1,50 @@
 .DEFAULT_GOAL := bin/byte
 
-test: bin/byte
-	bin/byte < mg.f24 > test/output.txt
+# Compiler and flags
+CXX      := g++
+CXXFLAGS := -std=c++11 -MMD -MP
 
-# byte
+# Directories
+BINDIR       := bin
+OBJDIR       := obj
+SRCDIR       := src
+TEST_OUTPUT_DIR := test_output
 
-bin/byte: obj/byte.o obj/lexer.o bin
-	g++ -std=c++11 -o bin/byte obj/byte.o obj/lexer.o
+# Source files (explicitly listed)
+SRCS    := byte.cpp lexer.cpp
+SOURCES := $(addprefix $(SRCDIR)/, $(SRCS))
+OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
+DEPS    := $(OBJECTS:.o=.d)
 
-obj/byte.o: src/byte.cpp obj
-	g++ -std=c++11 -o obj/byte.o -c src/byte.cpp
+# Build the target executable
+$(BINDIR)/byte: $(OBJECTS) | $(BINDIR)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS)
 
-# lexer
+# Pattern rule for object files
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-obj/lexer.o: src/lexer.cpp obj
-	g++ -std=c++11 -o obj/lexer.o -c src/lexer.cpp
+# Generate lexer.cpp from lexer.l
+$(SRCDIR)/lexer.cpp: $(SRCDIR)/lexer.l $(SRCDIR)/token.h $(wildcard $(SRCDIR)/*.h)
+	flex -p -o $@ -i $<
 
-src/lexer.cpp: src/lexer.l src/token.h src/*.h
-	flex -p -o src/lexer.cpp -i src/lexer.l 
+# Ensure lexer.cpp is built before compiling lexer.o
+$(OBJDIR)/lexer.o: $(SRCDIR)/lexer.cpp
 
-# directories
+# Create directories if they don't exist
+$(BINDIR) $(OBJDIR):
+	mkdir -p $@
 
-bin:
-	mkdir bin
-
-obj:
-	mkdir obj
-
-# tidy er up
-
+# Clean generated files and directories
+.PHONY: clean
 clean:
-	rm -rf bin obj src/lexer.cpp src/args.cpp *.s
-	clear && clear
+	rm -rf $(BINDIR) $(OBJDIR) $(SRCDIR)/lexer.cpp *.s
+
+# Test target
+.PHONY: test
+test: $(BINDIR)/byte
+	mkdir -p $(TEST_OUTPUT_DIR)
+	$(BINDIR)/byte < mg.f24 > $(TEST_OUTPUT_DIR)/output.txt
+
+# Include dependency files
+-include $(DEPS)
