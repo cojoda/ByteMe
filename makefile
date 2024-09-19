@@ -8,7 +8,7 @@ CXXFLAGS := -std=c++11 -MMD -MP
 BINDIR       := bin
 OBJDIR       := obj
 SRCDIR       := src
-TEST_DIR := test
+TEST_DIR     := test
 
 # Source files (explicitly listed)
 SRCS    := byte.cpp lexer.cpp
