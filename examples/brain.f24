@@ -1,0 +1,84 @@
+// ----------------------------------------------------------------------------
+//
+// BF Interpreter
+// (Probably interprets the esoteric programming language known as Brainf***? Kinda hard to test right now ...)
+// Programming Inception... ;)
+//
+// Cody Danielson
+//
+// ----------------------------------------------------------------------------
+
+program $bf_interpreter
+{
+    procedure interpret(string code)
+    {
+        integer code_length := length(code), code_size1 := code_length - 1;
+        integer tape_size := 30000, tape_size1 := tape_size - 1;
+        integer tape[tape_size1+1], data_pointer := 0, instruction_pointer := 0;
+        integer i, loop, input_value;
+        char command;
+        do (i := 0; i <= tape_size1; i++) tape[i] := 0;
+        do while (instruction_pointer <= code_size1)
+        {
+            command := code[instruction_pointer];
+            if (command == '>') then data_pointer++;
+            else if (command == '<') then data_pointer--;
+            else if (command == '+') then tape[data_pointer]++;
+            else if (command == '-') then tape[data_pointer]--;
+            else if (command == '.') then print_char(tape[data_pointer]);
+            else if (command == ',') then { read_char(input_value); tape[data_pointer] := input_value; }
+            else if (command == '[') then
+            {
+                if (tape[data_pointer] == 0) then
+                {
+                    loop := 1;
+                    do while (loop > 0)
+                    {
+                        instruction_pointer++;
+                        if (instruction_pointer > code_size1) then { print_string("Error: unmatched '['\n"); return; }
+                        command := code[instruction_pointer];
+                        if (command == '[') then loop++;
+                        else if (command == ']') then loop--;
+                    }
+                }
+            }
+            else if (command == ']') then
+            {
+                if (tape[data_pointer] != 0) then
+                {
+                    loop := 1;
+                    do while (loop > 0)
+                    {
+                        instruction_pointer--;
+                        if (instruction_pointer < 0) then { print_string("Error: unmatched ']'\n"); return; }
+                        command := code[instruction_pointer];
+                        if (command == ']') then loop++;
+                        else if (command == '[') then loop--;
+                    }
+                }
+            }
+            instruction_pointer++;
+        }
+    }
+
+    procedure print_char(integer ascii_value)
+    {
+        char character := ascii_value;
+        print_string(character);
+    }
+
+    procedure read_char(integer result)
+    {
+        string input_str;
+        read_string(input_str);
+        if (length(input_str) > 0) then result := input_str[0];
+        else result := 0;
+    }
+
+    function integer main()
+    {
+        string code := "++++++++++[>++++++++++<-]>+.";
+        interpret(code);
+        return 0;
+    }
+}
