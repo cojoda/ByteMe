@@ -53,84 +53,108 @@ extern yyFlexLexer *scanner;
 %start program
 
 %%
-program: //program contains a name and at least one function, first node
-    K_PROGRAM IDENTIFIER LCURLY function RCURLY
+    //program contains a name and at least one function, first node
+program
+    : K_PROGRAM IDENTIFIER LCURLY function RCURLY
     {
         cout << "Program start.\n";
         $$ = $1;
-    } |
+    } 
+    |
     {
         cout << "Parsing error.\n";
     }
 ;
-builtin_func_input: //input functions
-    K_READ_INTEGER LPAREN IDENTIFIER RPAREN SEMI {
+    //input functions
+builtin_func_input
+    : K_READ_INTEGER LPAREN IDENTIFIER RPAREN SEMI
+    {
 
-    } |
-    K_READ_DOUBLE LPAREN IDENTIFIER RPAREN SEMI {
+    }
+    | K_READ_DOUBLE LPAREN IDENTIFIER RPAREN SEMI
+    {
 
-    } |
-    K_READ_STRING LPAREN IDENTIFIER RPAREN SEMI {
+    }
+    | K_READ_STRING LPAREN IDENTIFIER RPAREN SEMI
+    {
 
     }
 ;
-builtin_func_output: //output functions
-    K_PRINT_INTEGER LPAREN IDENTIFIER RPAREN SEMI {
+    //output functions
+builtin_func_output
+    : K_PRINT_INTEGER LPAREN IDENTIFIER RPAREN SEMI
+    {
 
-    } |
-    K_PRINT_DOUBLE LPAREN IDENTIFIER RPAREN SEMI {
+    }
+    | K_PRINT_DOUBLE LPAREN IDENTIFIER RPAREN SEMI
+    {
 
-    } |
-    K_PRINT_STRING LPAREN IDENTIFIER RPAREN SEMI {
+    }
+    | K_PRINT_STRING LPAREN IDENTIFIER RPAREN SEMI
+    {
 
     }
 
 ;
-vardec: //variable declaration
-    K_INTEGER IDENTIFIER SEMI {
+    //variable declaration
+vardec
+    : K_INTEGER IDENTIFIER SEMI
+    {
         cout << "Declared integer.\n";
         $$ = $1;
-    } |
-    K_DOUBLE IDENTIFIER SEMI {
+    }
+    | K_DOUBLE IDENTIFIER SEMI
+    {
         cout << "Declared double.\n";
         $$ = $1;
-    } |
-    K_STRING IDENTIFIER SEMI {
+    }
+    | K_STRING IDENTIFIER SEMI
+    {
         cout << "Declared string.\n";
         $$ = $1;
     }
 ;
-function: //function contains expressions
-    K_FUNCTION K_INTEGER IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY {
+    //function contains expressions
+function
+    : K_FUNCTION K_INTEGER IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY
+    {
         //$$ = $1;
         cout << "Integer function declared.\n";
-    } |
-    K_FUNCTION K_DOUBLE IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY {
+    }
+    | K_FUNCTION K_DOUBLE IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY
+    {
         //$$ = $1;
         cout << "Double function declared.\n";
-    } |
-    K_FUNCTION K_STRING IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY {
+    }
+    | K_FUNCTION K_STRING IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY
+    {
         //$$ = $1;
         cout << "String function declared.\n";
     }
 ;
-expressions: //one or more expressions, we do NOT need to have any code here
+    //one or more expressions, we do NOT need to have any code here
+expressions
+    :
     | expression SEMI expressions
 
 ;
 
-expression:
-    vardec {
+expression
+    : vardec
+    {
         cout << "Variable declaration.\n";
         $$ = $1;
-    } |
-    builtin_func_input {
+    }
+    | builtin_func_input
+    {
 
-    } |
-    builtin_func_output {
+    }
+    | builtin_func_output
+    {
 
-    } |
-    exp_assign {
+    }
+    | exp_assign
+    {
 
     }
 
