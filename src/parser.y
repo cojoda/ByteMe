@@ -73,8 +73,8 @@ struct varContainer {
 
 %%
     //program contains a name and at least one function, first node
-program
-    : K_PROGRAM IDENTIFIER LCURLY function RCURLY
+program:
+    K_PROGRAM IDENTIFIER LCURLY function RCURLY
     {
         cout << "Program start.\n";
         $$ = $1;
@@ -85,8 +85,8 @@ program
     }
 ;
 //input functions
-builtin_func_input
-    : K_READ_INTEGER LPAREN IDENTIFIER RPAREN SEMI
+builtin_func_input:
+    K_READ_INTEGER LPAREN IDENTIFIER RPAREN SEMI
     {
 
     }
@@ -100,8 +100,8 @@ builtin_func_input
     }
 ;
     //output functions
-builtin_func_output //may not need semi at the end?
-    : K_PRINT_INTEGER expression SEMI
+builtin_func_output:
+    K_PRINT_INTEGER expression SEMI
     {
         $$ = $2;
     }
@@ -113,11 +113,11 @@ builtin_func_output //may not need semi at the end?
     {
         $$ = $2;
     }
-
+//may not need semi at the end?
 ;
     //variable declaration
-vardec
-    : K_INTEGER IDENTIFIER SEMI
+vardec:
+    K_INTEGER IDENTIFIER SEMI
     {
         cout << "Declared integer.\n";
         $$ = $1;
@@ -134,8 +134,8 @@ vardec
     }
 ;
     //function contains expressions
-function
-    : K_FUNCTION K_INTEGER IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY
+function:
+    K_FUNCTION K_INTEGER IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY
     {
         $$ = $1;
         cout << "Integer function declared.\n";
@@ -152,13 +152,11 @@ function
     }
 ;
     //one or more expressions, we do NOT need to have any code here
-expressions
-    :
+expressions:
     | expression SEMI expressions
 ;
 
-expression
-    : vardec
+expression: vardec
     {
         cout << "Variable declaration.\n";
         $$ = $1;
