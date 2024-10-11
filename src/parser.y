@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <FlexLexer.h>
+#include <vector>
 #include "token.h"
 #include "operation.h"
 #include "keyword.h"
@@ -9,22 +10,39 @@
 using std::endl;
 using std::cerr;
 using std::cout;
+using std::string;
 
 
-int yyerror(char *s);
+void yyerror(char *s);
 int nodenum = 1;
 
 extern yyFlexLexer *scanner;
 
 #define yylex() scanner->yylex()
 
+//preliminary type checking stuff. this is dtype
+    //0 = int
+    //1 = double
+    //2 = string
+
+//the varContainer struct basically contains the type and value
+//replace with class if this gets wonky
+
+struct varContainer {
+    int dtype;
+
+    int ival;
+    double dval;
+    string sval;
+
+};
+
 %}
 
 %union {
-    char varname[40]; //length of 40 characters for var names
-    int ival;
-    double dval;
-    //todo string value, maybe import the C++ string class?
+    char varname[40]; //length of 40 characters for var names, aka identifiers
+    vector<varContainer> programvariables;
+    //we're gonna use vectors for this, because we dont want this to be an arbitrary fixed size.
 }
 
 %token K_INTEGER K_DOUBLE K_STRING
@@ -40,13 +58,14 @@ extern yyFlexLexer *scanner;
 %token INCREMENT DECREMENT
 %token DOR DAND NOT DEQ GEQ GT LEQ LT NE
 
-%token ASSIGN_PLUS ASSIGN_MINUS ASSIGN_MULTIPLY ASSIGN_DIVIDE ASSIGN_MOD
+%right ASSIGN_PLUS ASSIGN_MINUS ASSIGN_MULTIPLY ASSIGN_DIVIDE ASSIGN_MOD ASSIGN
 
 %token PERIOD SEMI LBRACKET RBRACKET LCURLY RCURLY LPAREN RPAREN COMMA
 
-%token ICONSTANT DCONSTANT
-%token <varname> SCONSTANT
 %token <varname> IDENTIFIER
+
+%token ICONSTANT DCONSTANT SCONSTANT
+%token <varname> SCONSTANT
 %token <varname> DCONSTANT
 %token <varname> ICONSTANT
 
@@ -65,7 +84,7 @@ program
         cout << "Parsing error.\n";
     }
 ;
-    //input functions
+//input functions
 builtin_func_input
     : K_READ_INTEGER LPAREN IDENTIFIER RPAREN SEMI
     {
@@ -81,18 +100,18 @@ builtin_func_input
     }
 ;
     //output functions
-builtin_func_output
-    : K_PRINT_INTEGER LPAREN IDENTIFIER RPAREN SEMI
+builtin_func_output //may not need semi at the end?
+    : K_PRINT_INTEGER expression SEMI
     {
-
+        $$ = $2;
     }
-    | K_PRINT_DOUBLE LPAREN IDENTIFIER RPAREN SEMI
+    | K_PRINT_DOUBLE expression SEMI
     {
-
+        $$ = $2;
     }
-    | K_PRINT_STRING LPAREN IDENTIFIER RPAREN SEMI
+    | K_PRINT_STRING expression SEMI
     {
-
+        $$ = $2;
     }
 
 ;
@@ -118,17 +137,17 @@ vardec
 function
     : K_FUNCTION K_INTEGER IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY
     {
-        //$$ = $1;
+        $$ = $1;
         cout << "Integer function declared.\n";
     }
     | K_FUNCTION K_DOUBLE IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY
     {
-        //$$ = $1;
+        $$ = $1;
         cout << "Double function declared.\n";
     }
     | K_FUNCTION K_STRING IDENTIFIER LPAREN RPAREN LCURLY expressions RCURLY
     {
-        //$$ = $1;
+        $$ = $1;
         cout << "String function declared.\n";
     }
 ;
@@ -136,7 +155,6 @@ function
 expressions
     :
     | expression SEMI expressions
-
 ;
 
 expression
@@ -151,19 +169,69 @@ expression
     }
     | builtin_func_output
     {
-
+        cout << "Printing variable.\n";
+        $$ = $1;
     }
-    | exp_assign
+    | var_assign
     {
-
+        cout << "Variable assignment.\n";
+        $$ = $1;
+    } //we will need to handle other types of assignment separately
+    | LPAREN expression RPAREN //revert to old way if this causes problems.
+    {
+        $$ = $2;
+    }
+;
+var_assign: //type checking of the variable being assigned to will need to happen here! In each rule too, before we do anything.
+    IDENTIFIER ASSIGN consttypes
+    { //normal assignment
+        $$ = $3;
+    }
+    | IDENTIFIER ASSIGN_PLUS consttypes
+    {
+        //if string, should we concatenate?
+        //otherwise should only work with doubles and integers
+    }
+    | IDENTIFIER ASSIGN_MINUS consttypes
+    {
+        //should only work with doubles and integers
+    }
+    | IDENTIFIER ASSIGN_MULTIPLY consttypes
+    {
+        //should only work with doubles and integers
+    }
+    | IDENTIFIER ASSIGN_DIVIDE consttypes
+    {
+        //should only work with doubles and integers
+    }
+    | IDENTIFIER ASSIGN_MOD consttypes
+    {
+        //should only work with doubles and integers
+    }
+;
+consttypes:
+    ICONSTANT
+    {
+        $$ = $1;
+        cout << "An integer.\n";
+    }
+    | DCONSTANT
+    {
+        $$ = $1;
+        cout << "A double.\n";
+    }
+    | SCONSTANT
+    {
+        $$ = $1;
+        cout << "A string.\n";
     }
 
 ;
-exp_assign: //type checking will need to happen here!
-
-
-;
-
 
 
 %%
+void yyerror(char *s)
+{
+    fprintf(stderr, "%s\n", s);
+}
+//consider this link https://github.com/Shuvo091/simple-programming-language-using-flex-and-bison/tree/master
