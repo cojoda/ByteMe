@@ -167,28 +167,36 @@ for
 ;
 
 declaration
-    : homodeclaration {}
-    | heterodeclaration {}
+    : homodeclaration
+    | heterodeclaration
 ;
 
 homodeclaration
-    : type variables {}
+    : type variable_list
+;
+
+variable_list
+    : variable
+    | variable COMMA variable_list
 ;
 
 heterodeclaration
-    : type variable COMMA variables {}
-    | type variable COMMA heterodeclaration {}
-    | type variable {}
+    : type variable COMMA type_variable_list
 ;
 
-variables
-    : variable COMMA variables {}
-    | variable {}
+type_variable_list
+    : type variable
+    | type variable COMMA type_variable_list
 ;
 
 variable
-    : IDENTIFIER {}
-    | array {}
+    : IDENTIFIER
+    | array
+;
+
+array
+    : IDENTIFIER LBRACKET RBRACKET
+    | IDENTIFIER LBRACKET expression RBRACKET
 ;
 
 assignment
@@ -209,11 +217,6 @@ type
     : K_INTEGER {}
     | K_DOUBLE {}
     | K_STRING {}
-;
-
-array
-    : IDENTIFIER LBRACKET RBRACKET {}
-    | IDENTIFIER LBRACKET expression RBRACKET {}
 ;
 
 
