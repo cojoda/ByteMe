@@ -1,61 +1,45 @@
-.DEFAULT_GOAL := bin/byte
+# Check if the directory /opt/homebrew/opt/flex exists
+FLEX_PATH := /opt/homebrew/opt/flex
+FLEX_INCLUDE := $(shell [ -d $(FLEX_PATH) ] && echo "-I $(FLEX_PATH)/include")
 
-# Compiler and flags
-CXX      := g++
-CXXFLAGS := -std=c++11 -MMD -MP
+CXX := g++
+CXXFLAGS := --std=c++11 $(FLEX_INCLUDE)
 
-# Directories
-BINDIR       := bin
-OBJDIR       := obj
-SRCDIR       := src
-TEST_DIR     := test
+default: bin/byte
 
-# Source files (explicitly listed)
-SRCS    := byte.cpp lexer.cpp
-SOURCES := $(addprefix $(SRCDIR)/, $(SRCS))
-OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
-DEPS    := $(OBJECTS:.o=.d)
+test: bin/byte examples/test.f24
+	bin/byte < examples/test.f24
 
-# Build the target executable
-$(BINDIR)/byte: $(OBJECTS) | $(BINDIR)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS)
+bin/byte: obj/parser.o obj/lexer.o obj/byte.o bin
+	$(CXX) $(CXXFLAGS) obj/lexer.o obj/parser.o obj/byte.o -o bin/byte
 
-# Pattern rule for object files
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+obj/byte.o: src/byte.cpp
+	$(CXX) $(CXXFLAGS) -c src/byte.cpp -o obj/byte.o
 
-# Generate lexer.cpp from lexer.l
-$(SRCDIR)/lexer.cpp: $(SRCDIR)/lexer.l $(SRCDIR)/token.h $(wildcard $(SRCDIR)/*.h)
-	flex -p -o $@ -i $<
+obj/lexer.o: src/lexer.cpp obj
+	$(CXX) $(CXXFLAGS) -c src/lexer.cpp -o obj/lexer.o
 
-# Ensure lexer.cpp is built before compiling lexer.o
-$(OBJDIR)/lexer.o: $(SRCDIR)/lexer.cpp
+obj/parser.o: src/parser.cpp src/parser.hpp obj
+	$(CXX) $(CXXFLAGS) -c src/parser.cpp -o obj/parser.o
 
-# Create directories if they don't exist
-$(BINDIR) $(OBJDIR):
-	mkdir -p $@
+src/lexer.cpp: src/lexer.l
+	flex -o src/lexer.cpp src/lexer.l
 
-# Clean generated files and directories
-.PHONY: clean
+src/parser.cpp: src/parser.y
+	bison -d src/parser.y -o src/parser.cpp
+
+src/parser.hpp: src/parser.y
+	bison -d src/parser.y -o src/parser.cpp
+
+
+
+
+obj:
+	mkdir obj
+
+bin:
+	mkdir bin
+
 clean:
-	rm -rf $(BINDIR) $(OBJDIR) $(SRCDIR)/lexer.cpp $(TEST_DIR) *.s
-
-# Test files
-TEST_FILES := $(wildcard examples/*.f24)
-TEST_OUTPUT_DIR := $(TEST_DIR)/outputs
-TEST_OUTPUTS := $(patsubst examples/%.f24,$(TEST_OUTPUT_DIR)/%.txt,$(TEST_FILES))
-
-# Test target
-.PHONY: test
-test: $(TEST_OUTPUTS)
-
-# Pattern rule for test outputs
-$(TEST_OUTPUT_DIR)/%.txt: examples/%.f24 $(BINDIR)/byte | $(TEST_OUTPUT_DIR)
-	$(BINDIR)/byte < $< > $@
-
-# Create test output directory
-$(TEST_OUTPUT_DIR):
-	mkdir -p $@
-
-# Include dependency files
--include $(DEPS)
+	rm -f src/parser.cpp src/parser.hpp src/lexer.cpp
+	rm -rf obj bin

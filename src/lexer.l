@@ -1,12 +1,17 @@
 %{
     // Include necessary header files
     #include <string>
+    #include <string.h>
+
     #include "keyword.h"
     #include "operation.h"
     #include "punctuation.h"
-    #include "token.h"
+    
+    #include "parser.hpp"
 
-    // Macros for token output
+    // extern int yylval;
+
+    // Macros for lexer output testing
     #define TOKEN1(arg1)        yyout << "<" << arg1 << ">";
     #define TOKEN2(arg1, arg2)  yyout << "<" << arg1 << "," << arg2 << ">";
     #define GET_TOKEN(_1, _2, NAME, ...) NAME
@@ -17,7 +22,7 @@
 
 %option noyywrap
 %option c++
-%option prefix="Byte"
+/* %option prefix="Byte" */
 
 
 
@@ -41,62 +46,62 @@ PUN     [.;\[\]{}(),]
 
 
     /* Comments */
-\/\/.*\n                                        { yyout << '\n'; } 
+\/\/.*\n                                        { } 
 
 
 
     /* Whitespace */
-{s}+                                            { yyout << yytext;}
+{s}+                                            { }
 
 
 
     /* String Constants */
-[\"][^\"]*[\"]                                  { TOKEN("SCONSTANT", yytext); }
+[\"][^\"]*[\"]                                  { yylval.s_val = new std::string(yytext, yyleng); return SCONSTANT; }
 
 
 
     /* Integer Constants */
-{d}+                                            { TOKEN("ICONSTANT", yytext); }
+{d}+                                            { yylval.i_val = atoi(yytext); return ICONSTANT; }
 
 
 
     /* Floating-point Constants */
-(({d}+\.?{d}*)|({d}*\.?{d}+))({EXP}[-+]?{d}+)?  { TOKEN("DCONSTANT", yytext); }
+(({d}+\.?{d}*)|({d}*\.?{d}+))({EXP}[-+]?{d}+)?  { yylval.d_val = atof(yytext); return DCONSTANT; }
 
 
 
     /* Operators */
 {OP1}{OP2}?                 {
-    std::string word = operation_to_token((std::string)yytext);
-    
-    if (word == "REJECT") TOKEN("UNKNOWN")
-    else                  TOKEN(word);
+    int token = operation_to_token((std::string)yytext);
+    return token;
 }
 
 
 
     /* Punctuation */
 {PUN}                       {
-    std::string word = punctuation_to_token((std::string)yytext);
-    
-    if (word == "REJECT") TOKEN("UNKNOWN")
-    else                  TOKEN(word);
+    int token = punctuation_to_token((std::string)yytext);
+    return token;
 }
 
 
 
     /* Keywords & Identifiers */
 ({a}|[_$])({w}|[$])*        { 
-    std::string word = keyword_to_token((std::string)yytext);
+    int token = keyword_to_token((std::string)yytext);
     
-    if (word == "IDENTIFIER") TOKEN(word, yytext)
-    else                      TOKEN(word);
+    if (token == IDENTIFIER) {
+        strncpy(yylval.id_val, yytext, sizeof(yylval.id_val) - 1);
+        yylval.id_val[sizeof(yylval.id_val) - 1] = '\0'; 
+    }
+
+    return token;
 }
 
 
 
     /* End of File */
-<<EOF>>             { TOKEN("EOF"); return 0; }
+<<EOF>>             { ; return EOF; return 0; }
 
 
 

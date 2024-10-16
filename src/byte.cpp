@@ -1,14 +1,22 @@
-#define  yyFlexLexer ByteFlexLexer
+// #define  yyFlexLexer ByteFlexLexer
 #include <FlexLexer.h>
-#undef   yyFlexLexer
+// #undef   yyFlexLexer
 
+#include <iostream>
+
+extern int yydebug;
+
+yyFlexLexer* flexlexer;  // Declare the flexlexer instance (static pointer to heap allocation)
+
+int yyparse();  // Declare the parser function
 
 
 int main(int argc, char** argv) 
 {
-    FlexLexer* flexlexer = new ByteFlexLexer();
-    flexlexer->yylex();
+    flexlexer = new yyFlexLexer();
+    // yyFlexLexer->yylex();
+    yydebug = 1;
+    yyparse();
     delete flexlexer;
-
     exit(EXIT_SUCCESS);
 }
