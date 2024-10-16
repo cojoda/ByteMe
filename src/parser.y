@@ -37,23 +37,37 @@ void yyerror(const char *s);
 %token K_READ_INTEGER K_READ_DOUBLE K_READ_STRING
 %token K_PRINT_INTEGER K_PRINT_DOUBLE K_PRINT_STRING
 
+
     // statement keywords
 %token K_DO K_WHILE K_UNTIL
-%token K_IF K_THEN K_ELSE
+
+%token K_IF K_THEN
+%nonassoc LOWER_THAN_ELSE
+%nonassoc K_ELSE
+
 %token K_RETURN K_EXIT
 
-    // arithmetic operators
-%left  PLUS MINUS MULTIPLY DIVIDE MOD POW
-%token INCREMENT DECREMENT
 
-    // boolean operators
-%token DOR DAND NOT DEQ GEQ GT LEQ LT NE
+    // operators
 
-    // assignment statements
-%token ASSIGN_PLUS ASSIGN_MINUS ASSIGN_MULTIPLY ASSIGN_DIVIDE ASSIGN_MOD ASSIGN
+%left  COMMA
+%right ASSIGN ASSIGN_PLUS ASSIGN_MINUS ASSIGN_MULTIPLY ASSIGN_DIVIDE ASSIGN_MOD
+%left  DOR
+%left  DAND
+%left  DEQ NE
+%left  LT LEQ GT GEQ
+%left  PLUS MINUS
+%left  MULTIPLY DIVIDE MOD
+%right POW
+%right NOT
+%left  PERIOD
+%left  LBRACKET RBRACKET
+%left  LPAREN RPAREN
+%left  INCREMENT DECREMENT
+
 
     // punctuation
-%token PERIOD SEMI LBRACKET RBRACKET LCURLY RCURLY LPAREN RPAREN COMMA
+%token SEMI LCURLY RCURLY
 
     // terms
 %token <i_val> ICONSTANT
@@ -65,7 +79,7 @@ void yyerror(const char *s);
 %token UNKNOWN
 
     // start variable
-%start declarations
+%start start
 
 
 
@@ -82,7 +96,7 @@ program
 ;
 
 routines
-    : routines routine
+    : routines routine {}
     | %empty {}
 ;
 
@@ -92,18 +106,18 @@ routine
 ;
 
 parameters
-    : declarations {}
+    : declaration {}
     | %empty {}
 ;
 
 arguments
-    : argument {}
-    | %empty {}
+    : %empty
+    | expression_list
 ;
 
-argument
-    : argument COMMA argument {}
-    | expression {}
+expression_list
+    : expression
+    | expression_list COMMA expression
 ;
 
 block
@@ -120,7 +134,7 @@ statement
     | if {}
     | do {}
     | expression SEMI {}
-    | declarations SEMI {}
+    | declaration SEMI {}
     | assignment SEMI {}
     | routine {}
     | K_RETURN SEMI {}
@@ -130,47 +144,51 @@ statement
 ;
 
 if
-    : K_IF LPAREN expression RPAREN then {}
-    | K_IF LPAREN expression RPAREN then else {}
+    : K_IF LPAREN expression RPAREN then %prec LOWER_THAN_ELSE
+    | K_IF LPAREN expression RPAREN then else
 ;
 
 then
-    : K_THEN statement {}
+    : K_THEN statement
 ;
 
 else
-    : K_ELSE statement {}
-    | K_ELSE if then {}
+    : K_ELSE statement
 ;
 
 do
-    : for
+    : for {}
     | K_DO K_WHILE LPAREN expression RPAREN statement {}
     | K_DO K_UNTIL LPAREN expression RPAREN statement {}
-
+;
 
 for
     : K_DO LPAREN assignment SEMI boolean SEMI expression RPAREN statement {}
 ;
 
+declaration
+    : homodeclaration {}
+    | heterodeclaration {}
+;
+
+homodeclaration
+    : type variables {}
+;
+
+heterodeclaration
+    : type variable COMMA variables {}
+    | type variable COMMA heterodeclaration {}
+    | type variable {}
+;
 
 variables
-    : variables COMMA variable {}
+    : variable COMMA variables {}
     | variable {}
 ;
 
 variable
     : IDENTIFIER {}
     | array {}
-;
-
-declarations
-    : declarations COMMA declaration {}
-    | declaration {}
-;
-
-declaration
-    : type variables {}
 ;
 
 assignment
@@ -187,15 +205,15 @@ lvalue
     | declaration {}
 ;
 
-array
-    : IDENTIFIER LBRACKET expression RBRACKET {}
-    | IDENTIFIER LBRACKET RBRACKET {}
-;
-
 type
     : K_INTEGER {}
     | K_DOUBLE {}
     | K_STRING {}
+;
+
+array
+    : IDENTIFIER LBRACKET RBRACKET {}
+    | IDENTIFIER LBRACKET expression RBRACKET {}
 ;
 
 
@@ -204,16 +222,22 @@ expression
     : LPAREN expression RPAREN {}
     | IDENTIFIER LBRACKET expression RBRACKET {}
     | IDENTIFIER LPAREN arguments RPAREN {}
+    | builtin LPAREN arguments RPAREN {}
     | arithmetic {}
     | boolean {}
-    | constant {}
-;
-
-constant
-    : ICONSTANT {}
+    | ICONSTANT {}
     | DCONSTANT {}
     | SCONSTANT {}
     | IDENTIFIER {}
+;
+
+builtin
+    : K_PRINT_INTEGER
+    | K_PRINT_DOUBLE
+    | K_PRINT_STRING
+    | K_READ_INTEGER
+    | K_READ_DOUBLE
+    | K_READ_STRING
 ;
 
 arithmetic
@@ -238,6 +262,7 @@ boolean
     | expression DAND expression {}
     | expression DOR expression {}
     | NOT expression {}
+;
 %%
 
 

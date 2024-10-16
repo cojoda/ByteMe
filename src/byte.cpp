@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 {
     flexlexer = new yyFlexLexer();
     // yyFlexLexer->yylex();
-    yydebug = 1;
+    yydebug = 0;
     yyparse();
     delete flexlexer;
     exit(EXIT_SUCCESS);
