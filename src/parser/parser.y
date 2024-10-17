@@ -115,15 +115,42 @@ variable
 ;
 
 type
-    : K_INTEGER
-    | K_STRING
+    : K_INTEGER {}
+    | K_DOUBLE {}
+    | K_STRING {}
 ;
 
 expression
-    : ICONSTANT
+    : arithmetic {}
+    | boolean {}
+    | ICONSTANT {}
     | DCONSTANT {}
     | SCONSTANT {}
     | IDENTIFIER {}
+;
+
+arithmetic
+    : expression PLUS expression {}
+    | expression MINUS expression {}
+    | expression MULTIPLY expression {}
+    | expression DIVIDE expression {}
+    | expression MOD expression {}
+    | expression POW expression {}
+    | expression INCREMENT {}
+    | expression DECREMENT {}
+    | MINUS expression {}
+;
+
+boolean
+    : expression GT expression {}
+    | expression GEQ expression {}
+    | expression LT expression {}
+    | expression LEQ expression {}
+    | expression DEQ expression {}
+    | expression NE expression {}
+    | expression DAND expression {}
+    | expression DOR expression {}
+    | NOT expression {}
 ;
 
 
