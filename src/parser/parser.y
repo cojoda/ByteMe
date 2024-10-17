@@ -91,181 +91,43 @@ start
 ;
 
 program
-    : K_PROGRAM IDENTIFIER LCURLY routines RCURLY {}
-    | %empty {}
+    : declaration_list
 ;
 
-routines
-    : routines routine {}
-    | %empty {}
-;
-
-routine
-    : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block {}
-    | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block {}
-;
-
-parameters
-    : declaration {}
-    | %empty {}
-;
-
-arguments
-    : %empty
-    | expression_list
-;
-
-expression_list
-    : expression
-    | expression_list COMMA expression
-;
-
-block
-    : LCURLY statements RCURLY {}
-;
-
-statements
-    : statements statement {}
-    | %empty {}
-;
-
-statement
-    : block {}
-    | if {}
-    | do {}
-    | expression SEMI {}
-    | declaration SEMI {}
-    | assignment SEMI {}
-    | routine {}
-    | K_RETURN SEMI {}
-    | K_RETURN expression SEMI {}
-    | K_RETURN assignment SEMI {}
-    | SEMI {}
-;
-
-if
-    : K_IF LPAREN expression RPAREN then %prec LOWER_THAN_ELSE
-    | K_IF LPAREN expression RPAREN then else
-;
-
-then
-    : K_THEN statement
-;
-
-else
-    : K_ELSE statement
-;
-
-do
-    : for {}
-    | K_DO K_WHILE LPAREN expression RPAREN statement {}
-    | K_DO K_UNTIL LPAREN expression RPAREN statement {}
-;
-
-for
-    : K_DO LPAREN assignment SEMI boolean SEMI expression RPAREN statement {}
+declaration_list
+    : declaration_list declaration
+    | %empty
 ;
 
 declaration
-    : homodeclaration
-    | heterodeclaration
-;
-
-homodeclaration
     : type variable_list
 ;
 
 variable_list
     : variable
-    | variable COMMA variable_list
-;
-
-heterodeclaration
-    : type variable COMMA type_variable_list
-;
-
-type_variable_list
-    : type variable
-    | type variable COMMA type_variable_list
+    | variable_list COMMA variable
 ;
 
 variable
-    : IDENTIFIER
-    | array
-;
-
-array
-    : IDENTIFIER LBRACKET RBRACKET
-    | IDENTIFIER LBRACKET expression RBRACKET
-;
-
-assignment
-    : lvalue ASSIGN expression {}
-    | lvalue ASSIGN_PLUS expression {}
-    | lvalue ASSIGN_MINUS expression {}
-    | lvalue ASSIGN_MULTIPLY expression {}
-    | lvalue ASSIGN_DIVIDE expression {}
-    | lvalue ASSIGN_MOD expression {}
-;
-
-lvalue
-    : variable {}
-    | declaration {}
+    : declaration
+    | IDENTIFIER
+    | IDENTIFIER ASSIGN expression
 ;
 
 type
-    : K_INTEGER {}
-    | K_DOUBLE {}
-    | K_STRING {}
+    : K_INTEGER
+    | K_STRING
 ;
 
-
-
 expression
-    : LPAREN expression RPAREN {}
-    | IDENTIFIER LBRACKET expression RBRACKET {}
-    | IDENTIFIER LPAREN arguments RPAREN {}
-    | builtin LPAREN arguments RPAREN {}
-    | arithmetic {}
-    | boolean {}
-    | ICONSTANT {}
+    : ICONSTANT
     | DCONSTANT {}
     | SCONSTANT {}
     | IDENTIFIER {}
 ;
 
-builtin
-    : K_PRINT_INTEGER
-    | K_PRINT_DOUBLE
-    | K_PRINT_STRING
-    | K_READ_INTEGER
-    | K_READ_DOUBLE
-    | K_READ_STRING
-;
 
-arithmetic
-    : expression PLUS expression {}
-    | expression MINUS expression {}
-    | expression MULTIPLY expression {}
-    | expression DIVIDE expression {}
-    | expression MOD expression {}
-    | expression POW expression {}
-    | expression INCREMENT {}
-    | expression DECREMENT {}
-    | MINUS expression {}
-;
 
-boolean
-    : expression GT expression {}
-    | expression GEQ expression {}
-    | expression LT expression {}
-    | expression LEQ expression {}
-    | expression DEQ expression {}
-    | expression NE expression {}
-    | expression DAND expression {}
-    | expression DOR expression {}
-    | NOT expression {}
-;
 %%
 
 
