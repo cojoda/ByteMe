@@ -91,6 +91,10 @@ start
 ;
 
 program
+    : statement
+;
+
+statement
     : declaration_list
 ;
 
@@ -123,10 +127,32 @@ type
 expression
     : arithmetic {}
     | boolean {}
+    | builtin LPAREN arguments RPAREN {}
+    | LPAREN expression RPAREN {}
+    | IDENTIFIER LPAREN arguments RPAREN {}
     | ICONSTANT {}
     | DCONSTANT {}
     | SCONSTANT {}
     | IDENTIFIER {}
+;
+
+arguments
+    : %empty
+    | expression_list
+;
+
+expression_list
+    : expression
+    | expression_list COMMA expression
+;
+
+builtin
+    : K_PRINT_INTEGER
+    | K_PRINT_DOUBLE
+    | K_PRINT_STRING
+    | K_READ_INTEGER
+    | K_READ_DOUBLE
+    | K_READ_STRING
 ;
 
 arithmetic
@@ -140,6 +166,7 @@ arithmetic
     | expression DECREMENT {}
     | MINUS expression {}
 ;
+
 
 boolean
     : expression GT expression {}
