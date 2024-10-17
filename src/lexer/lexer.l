@@ -3,11 +3,11 @@
     #include <string>
     #include <string.h>
 
-    #include "keyword.h"
-    #include "operation.h"
-    #include "punctuation.h"
+    #include "keyword.hpp"
+    #include "operation.hpp"
+    #include "punctuation.hpp"
     
-    #include "parser.hpp"
+    #include "../parser/parser.hpp"
 
     // extern int yylval;
 

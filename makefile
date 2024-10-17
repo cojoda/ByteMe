@@ -5,10 +5,16 @@ FLEX_INCLUDE := $(shell [ -d $(FLEX_PATH) ] && echo "-I $(FLEX_PATH)/include")
 CXX := g++
 CXXFLAGS := --std=c++11 $(FLEX_INCLUDE)
 
+PARSE :=src/parser
+LEX :=src/lexer
+
 default: bin/byte
 
-test: bin/byte examples/test.f24
-	bin/byte < examples/test.f24
+test: bin/byte test/test.f24
+	bin/byte < test/test.f24
+
+testmg: bin/byte examples/mg.f24
+	bin/byte < examples/mg.f24
 
 bin/byte: obj/parser.o obj/lexer.o obj/byte.o bin
 	$(CXX) $(CXXFLAGS) obj/lexer.o obj/parser.o obj/byte.o -o bin/byte
@@ -16,20 +22,20 @@ bin/byte: obj/parser.o obj/lexer.o obj/byte.o bin
 obj/byte.o: src/byte.cpp
 	$(CXX) $(CXXFLAGS) -c src/byte.cpp -o obj/byte.o
 
-obj/lexer.o: src/lexer.cpp obj
-	$(CXX) $(CXXFLAGS) -c src/lexer.cpp -o obj/lexer.o
+obj/lexer.o: $(LEX)/lexer.cpp $(LEX)/keyword.hpp $(LEX)/operation.hpp $(LEX)/punctuation.hpp $(LEX)/token.hpp obj
+	$(CXX) $(CXXFLAGS) -c $(LEX)/lexer.cpp -o obj/lexer.o
 
-obj/parser.o: src/parser.cpp src/parser.hpp obj
-	$(CXX) $(CXXFLAGS) -c src/parser.cpp -o obj/parser.o
+obj/parser.o: $(PARSE)/parser.cpp $(PARSE)/parser.hpp obj
+	$(CXX) $(CXXFLAGS) -c $(PARSE)/parser.cpp -o obj/parser.o
 
-src/lexer.cpp: src/lexer.l
-	flex -o src/lexer.cpp src/lexer.l
+$(LEX)/lexer.cpp: $(LEX)/lexer.l
+	flex -o $(LEX)/lexer.cpp $(LEX)/lexer.l
 
-src/parser.cpp: src/parser.y
-	bison -d src/parser.y -o src/parser.cpp
+$(PARSE)/parser.cpp: $(PARSE)/parser.y
+	bison -d $(PARSE)/parser.y -o $(PARSE)/parser.cpp
 
-src/parser.hpp: src/parser.y
-	bison -d src/parser.y -o src/parser.cpp
+$(PARSE)/parser.hpp: $(PARSE)/parser.y
+	bison -d $(PARSE)/parser.y -o $(PARSE)/parser.cpp
 
 
 
@@ -41,5 +47,5 @@ bin:
 	mkdir bin
 
 clean:
-	rm -f src/parser.cpp src/parser.hpp src/lexer.cpp
+	rm -f $(PARSE)/parser.cpp $(PARSE).hpp $(LEX)/lexer.cpp
 	rm -rf obj bin

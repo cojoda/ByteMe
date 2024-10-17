@@ -1,0 +1,183 @@
+program $two_grid_solver
+{
+
+    procedure
+         set_constant(
+            double  dval,
+            double  dsoln[], integer s1
+                     )
+    {
+        integer i := 0;
+
+        do while ( i >= 0 && i <= s1 )
+            dsoln[i++] := dval;
+
+    }
+
+    procedure
+         print_vector(
+            string  title,
+            double  dsoln[], integer s1
+                     )
+    {
+        integer i;
+        do ( i := 0; i <= s1; i++ )
+        {
+        }   
+
+    }
+
+    function
+    double error_norm(
+            double  dsoln[], integer s1
+                     )
+    {
+        integer i := 0;
+        double  asoln;
+        double  l0_norm := 0.0d0;
+
+        do until ( i > s1 )
+        {
+            if ( dsoln[i] <= 0. ) then
+                asoln := -dsoln[i];
+            else
+                asoln := dsoln[i];
+            if ( asoln > l0_norm ) then
+            {
+                l0_norm := asoln;
+            }   
+            i++;
+        }   
+
+        return l0_norm;
+
+    }
+
+    procedure
+         residuals(
+            double  dsoln[], integer s1,
+            double  drhs[], integer rhs1,
+            double  dres[], integer res1
+                   )
+    {
+        integer i;
+
+        do ( i := 1; i < s1; i++ )
+            dres[i] := drhs[i] - 2.0 * dsoln[i] 
+                              + dsoln[i-1] 
+                              + dsoln[i+1];
+
+    }
+
+    function
+    double gauss_seidel(
+            integer iters,
+            double  dsoln[], integer s1,
+            double  drhs[], integer rhs1
+                     )
+    {
+        integer i, n:=1;
+        do until ( n > iters )
+        {
+            do ( i := 1; i < s1; i++ )
+                dsoln[i] := ( drhs[i] + dsoln[i-1] 
+                                     + dsoln[i+1]) / 2.0d0;
+            n++;
+        }   
+        return error_norm( dsoln, s1 );
+
+    }
+
+    function
+    integer interpolate( 
+            double dfrom[], integer f1,
+            double dto[],   integer t1
+                   )
+    {
+
+        procedure
+             coarsen( 
+                double dfrom[], integer f1,
+                double dto[],   integer t1
+                   )
+        {
+            integer i, m;
+
+            m := 0;
+            do ( i := 1 ; i < t1 ; i++ )
+            {
+                m += 2;
+                dto[i] := dfrom[m] +
+                        5.d-1 * ( dfrom[m-1] + dfrom[m+1] );
+            }   
+
+        }
+
+        procedure
+             refine_add(
+                double dfrom[], integer f1,
+                double dto[],   integer t1
+                   )
+        {
+            integer i, m;
+            m := 0;
+            do ( i := 1; i < f1 ; i++ )
+            {
+                m := m + 2;
+                dto[m] := dto[m] + dfrom[i];
+            }   
+            m := -1;
+            do ( i := 0; i < f1; i++ )
+            {
+                m := m + 2;
+                dto[m] := dto[m] + 
+                         .5 * ( dfrom[i] + dfrom[i+1] );
+            }   
+
+        }
+        if ( t1 == f1 / 2 ) then
+            coarsen( dfrom, f1, dto, t1 );
+        else if ( t1 == f1 * 2 ) then
+        {
+            refine_add( dfrom, f1, dto, t1 );
+        }   
+        else
+        {
+            return 0;
+        }   
+        return 1;
+
+    }
+
+    function
+    integer main( 
+            )
+    {
+        integer rval := 0;
+        double  enorm;
+        do while( fm1 <= 4 || fm1 % 2 != 0 )
+        {
+        }   
+        cm1 := fm1 / 2;
+        double fm[fm1+1],
+               frhs[fm1+1],
+               fres[fm1+1];
+        double cm[cm1+1], crhs[cm1+1];
+        set_constant( 1.0d0, fm, fm1 );
+        fm[0] := 0.0d0;
+        fm[fm1] := 0.;
+        enorm := error_norm( fm, fm1 );
+        enorm := gauss_seidel( 4, fm, fm1, frhs, fm1 );
+        residuals( fm, fm1, frhs, fm1, fres, fm1 );
+        if ( interpolate( fres, fm1, crhs, cm1 ) != 0 ) then
+            return rval := 1;
+        enorm := gauss_seidel( 500, cm, cm1, crhs, cm1 );
+        if ( interpolate( cm, cm1, fm, fm1 ) > 0 ) then
+            return 2;
+        enorm := error_norm( fm, fm1 );
+        enorm := gauss_seidel( 4, fm, fm1, frhs, fm1 );
+        return rval;
+
+    }
+
+}

@@ -7,3 +7,6 @@ obj
 lexer.cpp
 args.cpp
 mg.f24
+src/lexer/lexer.cpp
+src/parser/parser.hpp
+src/parser/parser.cpp
