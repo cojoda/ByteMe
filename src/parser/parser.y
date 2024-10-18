@@ -91,7 +91,28 @@ start
 ;
 
 program
-    : statements
+    : K_PROGRAM IDENTIFIER LCURLY routines RCURLY {}
+    | %empty {}
+;
+
+routines
+    : routines routine {}
+    | %empty {}
+;
+
+routine
+    : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block {}
+    | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block {}
+;
+
+parameters
+    : declaration {}
+    | %empty {}
+;
+
+arguments
+    : expression_list
+    | %empty
 ;
 
 block
@@ -105,9 +126,39 @@ statements
 
 statement
     : block {}
+    | if {}
+    | do {}
     | expression SEMI
     | declaration SEMI
     | assignment SEMI
+    | routine
+    | K_RETURN SEMI {}
+    | K_RETURN expression SEMI {}
+    | K_RETURN assignment SEMI {}
+    | SEMI
+;
+
+if
+    : K_IF LPAREN expression RPAREN then %prec LOWER_THAN_ELSE
+    | K_IF LPAREN expression RPAREN then else
+;
+
+then
+    : K_THEN statement
+;
+
+else
+    : K_ELSE statement
+;
+
+do
+    : for {}
+    | K_DO K_WHILE LPAREN expression RPAREN statement {}
+    | K_DO K_UNTIL LPAREN expression RPAREN statement {}
+;
+
+for
+    : K_DO LPAREN variable SEMI expression SEMI expression RPAREN statement {}
 ;
 
 declaration
@@ -120,7 +171,9 @@ variable_list
 ;
 
 variable
-    : declaration
+    : IDENTIFIER LBRACKET RBRACKET
+    | IDENTIFIER LBRACKET expression RBRACKET
+    | declaration
     | assignment
     | IDENTIFIER
 ;
@@ -157,15 +210,11 @@ expression
     | builtin LPAREN arguments RPAREN {}
     | LPAREN expression RPAREN {}
     | IDENTIFIER LPAREN arguments RPAREN {}
+    | IDENTIFIER LBRACKET expression RBRACKET
     | ICONSTANT {}
     | DCONSTANT {}
     | SCONSTANT {}
     | IDENTIFIER {}
-;
-
-arguments
-    : %empty
-    | expression_list
 ;
 
 expression_list
