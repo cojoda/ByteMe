@@ -2,6 +2,7 @@
 .vscode
 bin
 obj
+test
 
 # files
 lexer.cpp
@@ -10,3 +11,4 @@ mg.f24
 src/lexer/lexer.cpp
 src/parser/parser.hpp
 src/parser/parser.cpp
+test/*
