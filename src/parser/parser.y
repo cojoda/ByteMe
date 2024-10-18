@@ -96,12 +96,12 @@ void yyerror(const char *s);
 
 start
     : program {}
-;
+    ;
 
 program
     : K_PROGRAM IDENTIFIER LCURLY routines RCURLY {}
     | %empty {}
-;
+    ;
 
 
     // functions
@@ -109,34 +109,34 @@ program
 routines
     : routines routine {}
     | %empty {}
-;
+    ;
 
 routine
     : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block {}
     | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block {}
-;
+    ;
 
 parameters
     : declaration {}
     | %empty {}
-;
+    ;
 
 arguments
     : expression_list
     | %empty
-;
+    ;
 
 
     // statements
 
 block
     : LCURLY statements RCURLY {}
-;
+    ;
 
 statements
     : statements statement {}
     | %empty {}
-;
+    ;
 
 statement
     : block {}
@@ -150,44 +150,44 @@ statement
     | K_RETURN expression SEMI {}
     | K_RETURN assignment SEMI {}
     | SEMI
-;
+    ;
 
 
     // control statements
 if
     : K_IF LPAREN expression RPAREN then %prec LOWER_THAN_ELSE
     | K_IF LPAREN expression RPAREN then else
-;
+    ;
 
 then
     : K_THEN statement
-;
+    ;
 
 else
     : K_ELSE statement
-;
+    ;
 
 do
     : for {}
     | K_DO K_WHILE LPAREN expression RPAREN statement {}
     | K_DO K_UNTIL LPAREN expression RPAREN statement {}
-;
+    ;
 
 for
     : K_DO LPAREN variable SEMI expression SEMI expression RPAREN statement {}
-;
+    ;
 
 
     // variables
 
 declaration
     : type variable_list
-;
+    ;
 
 variable_list
     : variable
     | variable_list COMMA variable
-;
+    ;
 
 variable
     : IDENTIFIER LBRACKET RBRACKET
@@ -195,7 +195,7 @@ variable
     | declaration
     | assignment
     | IDENTIFIER
-;
+    ;
 
 assignment
     : lvalue ASSIGN rvalue
@@ -204,24 +204,24 @@ assignment
     | lvalue ASSIGN_MULTIPLY rvalue
     | lvalue ASSIGN_DIVIDE rvalue
     | lvalue ASSIGN_MOD rvalue
-;
+    ;
 
 lvalue
     : IDENTIFIER
     | IDENTIFIER LBRACKET expression RBRACKET
     | IDENTIFIER LBRACKET RBRACKET
-;
+    ;
 
 rvalue
     : expression
     | assignment
-;
+    ;
 
 type
     : K_INTEGER {}
     | K_DOUBLE {}
     | K_STRING {}
-;
+    ;
 
 
     // expressions
@@ -237,12 +237,12 @@ expression
     | DCONSTANT {}
     | SCONSTANT {}
     | IDENTIFIER {}
-;
+    ;
 
 expression_list
     : expression
     | expression_list COMMA expression
-;
+    ;
 
 builtin
     : K_PRINT_INTEGER
@@ -251,7 +251,7 @@ builtin
     | K_READ_INTEGER
     | K_READ_DOUBLE
     | K_READ_STRING
-;
+    ;
 
 arithmetic
     : expression PLUS expression {}
@@ -263,7 +263,7 @@ arithmetic
     | expression INCREMENT {}
     | expression DECREMENT {}
     | MINUS expression {}
-;
+    ;
 
 boolean
     : expression GT expression {}
@@ -275,7 +275,7 @@ boolean
     | expression DAND expression {}
     | expression DOR expression {}
     | NOT expression {}
-;
+    ;
 
 
 
