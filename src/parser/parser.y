@@ -1,16 +1,17 @@
 %{
+
+
+
 #include <FlexLexer.h>
 #include <iostream>
 #include <string>
 
-extern yyFlexLexer* flexlexer;      // Declare the flexlexer instance
-#define yylex() flexlexer->yylex()  // Define yylex() as a call to the flexlexer->yylex method
+extern yyFlexLexer* flexlexer;
+#define yylex() flexlexer->yylex()
 
 void yyerror(const char *s);
 
 
-
-// int nodenum = 1;
 
 %}
 
@@ -21,6 +22,8 @@ void yyerror(const char *s);
 
 %debug
 
+
+
 %union
 {
     int          i_val;
@@ -28,6 +31,8 @@ void yyerror(const char *s);
     std::string* s_val;
     char         id_val[33];
 }
+
+
 
     // type keywords
 %token K_INTEGER K_DOUBLE K_STRING
@@ -48,8 +53,7 @@ void yyerror(const char *s);
 %token K_RETURN K_EXIT
 
 
-    // operators
-
+    // operators (using C precedence & associavity)
 %left  COMMA
 %right ASSIGN ASSIGN_PLUS ASSIGN_MINUS ASSIGN_MULTIPLY ASSIGN_DIVIDE ASSIGN_MOD
 %left  DOR
@@ -69,6 +73,7 @@ void yyerror(const char *s);
     // punctuation
 %token SEMI LCURLY RCURLY
 
+
     // terms
 %token <i_val> ICONSTANT
 %token <d_val> DCONSTANT
@@ -78,13 +83,16 @@ void yyerror(const char *s);
 
 %token UNKNOWN
 
+
+
     // start variable
 %start start
 
 
 
-
 %%
+
+
 
 start
     : program {}
@@ -94,6 +102,9 @@ program
     : K_PROGRAM IDENTIFIER LCURLY routines RCURLY {}
     | %empty {}
 ;
+
+
+    // functions
 
 routines
     : routines routine {}
@@ -114,6 +125,9 @@ arguments
     : expression_list
     | %empty
 ;
+
+
+    // statements
 
 block
     : LCURLY statements RCURLY {}
@@ -138,6 +152,8 @@ statement
     | SEMI
 ;
 
+
+    // control statements
 if
     : K_IF LPAREN expression RPAREN then %prec LOWER_THAN_ELSE
     | K_IF LPAREN expression RPAREN then else
@@ -160,6 +176,9 @@ do
 for
     : K_DO LPAREN variable SEMI expression SEMI expression RPAREN statement {}
 ;
+
+
+    // variables
 
 declaration
     : type variable_list
@@ -204,6 +223,9 @@ type
     | K_STRING {}
 ;
 
+
+    // expressions
+
 expression
     : arithmetic {}
     | boolean {}
@@ -242,7 +264,6 @@ arithmetic
     | expression DECREMENT {}
     | MINUS expression {}
 ;
-
 
 boolean
     : expression GT expression {}
