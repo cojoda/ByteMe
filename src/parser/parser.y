@@ -17,13 +17,6 @@ void yyerror(const char *s);
 
 
 
-/* %define api.parser.class  {ByteParser}
-%define api.namespace {yy} */
-
-%debug
-
-
-
 %union
 {
     int          i_val;

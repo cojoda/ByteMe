@@ -3,10 +3,10 @@
 
 
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
- #include "../parser/parser.hpp"
+#include "../parser/parser.hpp"
 
 
 
@@ -41,7 +41,7 @@ int keyword_to_token(const std::string& keyword)
     
     if (mapping != keyword_map.end())
         return mapping->second;  // Return token if found
-    return IDENTIFIER;           // Otherwise, return identifier
+    return IDENTIFIER;           // Otherwise, return IDENTIFIER
 }
 
 
