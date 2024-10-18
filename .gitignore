@@ -12,3 +12,4 @@ src/lexer/lexer.cpp
 src/parser/parser.hpp
 src/parser/parser.cpp
 test/*
+src/parser/parser.output
