@@ -29,10 +29,10 @@ $(LEX)/lexer.cpp: $(LEX)/lexer.l makefile
 	flex -o $(LEX)/lexer.cpp $(LEX)/lexer.l
 
 $(PARSE)/parser.cpp: $(PARSE)/parser.y makefile
-	bison -d -v $(PARSE)/parser.y -o $(PARSE)/parser.cpp
+	bison -d $(PARSE)/parser.y -o $(PARSE)/parser.cpp
 
 $(PARSE)/parser.hpp: $(PARSE)/parser.y makefile
-	bison -d -v $(PARSE)/parser.y -o $(PARSE)/parser.cpp
+	bison -d $(PARSE)/parser.y -o $(PARSE)/parser.cpp
 
 
 
