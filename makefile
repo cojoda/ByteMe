@@ -10,10 +10,7 @@ LEX :=src/lexer
 
 default: bin/byte
 
-test: bin/byte test/test.f24
-	bin/byte < test/test.f24
-
-testmg: bin/byte examples/mg.f24
+test: bin/byte examples/mg.f24
 	bin/byte < examples/mg.f24
 
 bin/byte: obj/parser.o obj/lexer.o obj/byte.o bin
@@ -28,14 +25,14 @@ obj/lexer.o: $(LEX)/lexer.cpp $(LEX)/keyword.hpp $(LEX)/operation.hpp $(LEX)/pun
 obj/parser.o: $(PARSE)/parser.cpp $(PARSE)/parser.hpp obj
 	$(CXX) $(CXXFLAGS) -c $(PARSE)/parser.cpp -o obj/parser.o
 
-$(LEX)/lexer.cpp: $(LEX)/lexer.l
+$(LEX)/lexer.cpp: $(LEX)/lexer.l makefile
 	flex -o $(LEX)/lexer.cpp $(LEX)/lexer.l
 
-$(PARSE)/parser.cpp: $(PARSE)/parser.y
-	bison -d $(PARSE)/parser.y -o $(PARSE)/parser.cpp
+$(PARSE)/parser.cpp: $(PARSE)/parser.y makefile
+	bison -d -v $(PARSE)/parser.y -o $(PARSE)/parser.cpp
 
-$(PARSE)/parser.hpp: $(PARSE)/parser.y
-	bison -d $(PARSE)/parser.y -o $(PARSE)/parser.cpp
+$(PARSE)/parser.hpp: $(PARSE)/parser.y makefile
+	bison -d -v $(PARSE)/parser.y -o $(PARSE)/parser.cpp
 
 
 
