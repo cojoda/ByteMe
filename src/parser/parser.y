@@ -105,7 +105,9 @@ statements
 
 statement
     : block {}
+    | expression SEMI
     | declaration SEMI
+    | assignment SEMI
 ;
 
 declaration
@@ -119,8 +121,28 @@ variable_list
 
 variable
     : declaration
+    | assignment
     | IDENTIFIER
-    | IDENTIFIER ASSIGN expression
+;
+
+assignment
+    : lvalue ASSIGN rvalue
+    | lvalue ASSIGN_PLUS rvalue
+    | lvalue ASSIGN_MINUS rvalue
+    | lvalue ASSIGN_MULTIPLY rvalue
+    | lvalue ASSIGN_DIVIDE rvalue
+    | lvalue ASSIGN_MOD rvalue
+;
+
+lvalue
+    : IDENTIFIER
+    | IDENTIFIER LBRACKET expression RBRACKET
+    | IDENTIFIER LBRACKET RBRACKET
+;
+
+rvalue
+    : expression
+    | assignment
 ;
 
 type

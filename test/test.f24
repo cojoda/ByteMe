@@ -3,4 +3,7 @@ integer x, y;
 integer x := 3;
 integer x := 3, y;
 integer x := 3, y, string a, b := 2;
-integer x[3] := 3, y , string a, b := 2;
+integer x[3] := 4, y, string a, b := 2;
+integer x[] := 4, y, string a, b[2] := 2;
+
+x := y := z;
