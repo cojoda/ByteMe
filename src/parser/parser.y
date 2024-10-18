@@ -91,16 +91,21 @@ start
 ;
 
 program
-    : statement
+    : statements
+;
+
+block
+    : LCURLY statements RCURLY {}
+;
+
+statements
+    : statements statement {}
+    | %empty {}
 ;
 
 statement
-    : declaration_list
-;
-
-declaration_list
-    : declaration_list declaration
-    | %empty
+    : block {}
+    | declaration SEMI
 ;
 
 declaration
