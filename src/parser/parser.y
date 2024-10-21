@@ -63,7 +63,7 @@
 %token <s_val> SCONSTANT
 %token <s_val> IDENTIFIER
 %type <ast> start
-%type <s_val> program
+%type <ast> program
 %type <s_val> routines
 %type <s_val> routine
 %type <s_val> parameters
@@ -100,8 +100,12 @@ start
     : program                                                   { std::cout << *$1; }
     ;
 
+    /* program
+        : K_PROGRAM IDENTIFIER LCURLY routines RCURLY               { $$ = new std::string("(program:" + *$2 + "\n->" + *$4 + "\n)"); }
+        ; */
+
 program
-    : K_PROGRAM IDENTIFIER LCURLY routines RCURLY               { $$ = new std::string("(program:" + *$2 + "\n->" + *$4 + "\n)"); }
+    : K_PROGRAM IDENTIFIER LCURLY routines RCURLY               { $$ = new Program($2, $4); }
     ;
 
 

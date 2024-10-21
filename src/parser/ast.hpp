@@ -14,6 +14,8 @@
 class AST {
 public:
     virtual ~AST() = default;
+    virtual void print(std::ostream& os) const;
+    friend std::ostream& operator<<(std::ostream& os, const AST& ast);
 };
 
 
@@ -26,7 +28,7 @@ private:
     std::string* routines;
 public:
     Program(std::string* name, std::string* routines);
-    friend std::ostream& operator<<(std::ostream& os, const Program& program);
+    void print(std::ostream& os) const override;
 };
 
 
@@ -125,4 +127,4 @@ public:
 //     Program(const std::string& name, const std::vector<AST*>& routines) : name(name), routines(routines) {}
 // };
 
-#endif
+#endif // AST_HPP

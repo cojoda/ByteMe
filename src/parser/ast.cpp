@@ -2,12 +2,29 @@
 
 
 
-Program::Program(std::string* name, std::string* routines) : name(name), routines(routines) {}
 
-std::ostream& operator<<(std::ostream& os, const Program& program) {
-    os << "<Program," << *(program.name) << ", " << *(program.routines) << ">";
+void AST::print(std::ostream& os) const
+{
+    os << "AST class output";
+}
+
+std::ostream& operator<<(std::ostream& os, const AST& ast)
+{
+    ast.print(os);
     return os;
 }
+
+
+
+
+Program::Program(std::string* name, std::string* routines) : name(name), routines(routines) {}
+
+void Program::print(std::ostream& os) const
+{
+    os << "(program:" + *name + *routines + ")";
+}
+
+
 
 
 
