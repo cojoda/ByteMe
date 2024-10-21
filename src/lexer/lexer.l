@@ -1,32 +1,12 @@
 %{
-    // Include necessary header files
     #include <string>
-    #include <string.h>
-
-    #include "keyword.hpp"
-    #include "operation.hpp"
-    #include "punctuation.hpp"
-    
-    #include "../parser/parser.hpp"
-
-    // extern int yylval;
-
-    // Macros for lexer output testing
-    #define TOKEN1(arg1)        yyout << "<" << arg1 << ">";
-    #define TOKEN2(arg1, arg2)  yyout << "<" << arg1 << "," << arg2 << ">";
-    #define GET_TOKEN(_1, _2, NAME, ...) NAME
-    #define TOKEN(...)                   GET_TOKEN(__VA_ARGS__, TOKEN2, TOKEN1) (__VA_ARGS__)
+    #include "src/parser/ast.hpp"
+    #include "src/parser/parser.hpp"
 %}
 
-
-
 %option noyywrap
-%option c++
-/* %option prefix="Byte" */
 
-
-
-/* Character Class Macros */
+    /* Character Class Macros */
 a       [a-zA-Z]
 EXP     [dD]
 s       [ \t\n\r\f\v]
@@ -39,70 +19,84 @@ OP1     [-+*/%=|&!><:]
 OP2     [-+=|&]
 PUN     [.;\[\]{}(),]
 
-
-
 %%
-
-
 
     /* Comments */
 \/\/.*\n                                        { } 
 
-
-
     /* Whitespace */
 {s}+                                            { }
-
-
 
     /* String Constants */
 [\"][^\"]*[\"]                                  { yylval.s_val = new std::string(yytext, yyleng); return SCONSTANT; }
 
-
-
     /* Integer Constants */
-{d}+                                            { yylval.i_val = atoi(yytext); return ICONSTANT; }
-
-
+{d}+                                            { yylval.i_val = atoi(yytext); return ICONSTANT;                    }
 
     /* Floating-point Constants */
-(({d}+\.?{d}*)|({d}*\.?{d}+))({EXP}[-+]?{d}+)?  { yylval.d_val = atof(yytext); return DCONSTANT; }
-
-
+(({d}+\.?{d}*)|({d}*\.?{d}+))({EXP}[-+]?{d}+)?  { yylval.d_val = atof(yytext); return DCONSTANT;                    }
 
     /* Operators */
-{OP1}{OP2}?                 {
-    int token = operation_to_token((std::string)yytext);
-    return token;
-}
-
-
+"+"                     { return PLUS;              }
+"-"                     { return MINUS;             }
+"*"                     { return MULTIPLY;          }
+"/"                     { return DIVIDE;            }
+"%"                     { return MOD;               }
+"||"                    { return DOR;               }
+"&&"                    { return DAND;              }
+"!"                     { return NOT;               }
+"=="                    { return DEQ;               }
+"!="                    { return NE;                }
+">="                    { return GEQ;               }
+">"                     { return GT;                }
+"<="                    { return LEQ;               }
+"<"                     { return LT;                }
+":="                    { return ASSIGN;            }
+"+="                    { return ASSIGN_PLUS;       }
+"-="                    { return ASSIGN_MINUS;      }
+"*="                    { return ASSIGN_MULTIPLY;   }
+"/="                    { return ASSIGN_DIVIDE;     }
+"%="                    { return ASSIGN_MOD;        }
+"++"                    { return INCREMENT;         }
+"--"                    { return DECREMENT;         }
 
     /* Punctuation */
-{PUN}                       {
-    int token = punctuation_to_token((std::string)yytext);
-    return token;
-}
+"."                     { return PERIOD;            }
+";"                     { return SEMI;              }
+"["                     { return LBRACKET;          }
+"]"                     { return RBRACKET;          }
+"{"                     { return LCURLY;            }
+"}"                     { return RCURLY;            }
+"("                     { return LPAREN;            }
+")"                     { return RPAREN;            }
+","                     { return COMMA;             }
 
+    /* Identifiers */
+"program"               { return K_PROGRAM;         }
+"procedure"             { return K_PROCEDURE;       }
+"function"              { return K_FUNCTION;        }
+"read_integer"          { return K_READ_INTEGER;    }
+"read_double"           { return K_READ_DOUBLE;     }
+"read_string"           { return K_READ_STRING;     }
+"print_integer"         { return K_PRINT_INTEGER;   }
+"print_double"          { return K_PRINT_DOUBLE;    }
+"print_string"          { return K_PRINT_STRING;    }
+"do"                    { return K_DO;              }
+"until"                 { return K_UNTIL;           }
+"while"                 { return K_WHILE;           }
+"if"                    { return K_IF;              }
+"then"                  { return K_THEN;            }
+"else"                  { return K_ELSE;            }
+"return"                { return K_RETURN;          }
+"exit"                  { return K_EXIT;            }
+"integer"               { return K_INTEGER;         }
+"double"                { return K_DOUBLE;          }
+"string"                { return K_STRING;          }
 
-
-    /* Keywords & Identifiers */
-({a}|[_$])({w}|[$])*        { 
-    int token = keyword_to_token((std::string)yytext);
-    
-    if (token == IDENTIFIER) {
-        strncpy(yylval.id_val, yytext, sizeof(yylval.id_val) - 1);
-        yylval.id_val[sizeof(yylval.id_val) - 1] = '\0'; 
-    }
-
-    return token;
-}
-
-
+    /* Keywords */
+({a}|[_$])({w}|[$])*    { yylval.s_val = new std::string(yytext, yyleng); return IDENTIFIER; }
 
     /* End of File */
-<<EOF>>             { ; return EOF; return 0; }
-
-
+<<EOF>>                 { return EOF; return 0; }
 
 %%
