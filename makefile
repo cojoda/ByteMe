@@ -19,8 +19,8 @@ CXXFLAGS := --std=c++11 $(FLEX_INCLUDE) $(CXXINCLUDE)
 
 # ByteMe
 
-bin/byte: bin obj/lexer.o obj/parser.o obj/byte.o
-	$(CXX) $(CXXFLAGS) obj/lexer.o obj/parser.o obj/byte.o -o bin/byte
+bin/byte: bin obj/ast.o obj/lexer.o obj/parser.o obj/byte.o
+	$(CXX) $(CXXFLAGS) obj/ast.o obj/lexer.o obj/parser.o obj/byte.o -o bin/byte
 
 bin:
 	mkdir bin
@@ -28,6 +28,9 @@ bin:
 
 
 # Object Files
+
+obj/ast.o: obj src/parser/ast.cpp src/parser/ast.hpp
+	$(CXX) $(CXXFLAGS) -c src/parser/ast.cpp -o obj/ast.o
 
 obj/lexer.o: obj src/lexer/lexer.cpp src/parser/parser.hpp src/lexer/token.hpp
 	$(CXX) $(CXXFLAGS) -c src/lexer/lexer.cpp -o obj/lexer.o
@@ -60,10 +63,11 @@ clean:
 	rm -f src/parser/parser.cpp src/parser/parser.hpp src/parser/stack.hh
 	rm -f src/lexer/prelexer.cpp src/parser/preparser.cpp
 	rm -rf obj bin
+	clear && clear
 	
 
 test: clean bin/byte
-	bin/byte < examples/test.f24
+	bin/byte < examples/mg.f24
 
 
 prelexer: obj src/lexer/lexer.cpp src/parser/parser.hpp src/lexer/token.hpp

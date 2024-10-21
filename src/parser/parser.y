@@ -1,31 +1,24 @@
 %{
+    #include <iostream>
+    #include <string>
+    class AST;  // Forward declaration of AST
+    #include "src/parser/ast.hpp"
 
-
-
-#include <FlexLexer.h>
-#include <iostream>
-#include <string>
-
-extern yyFlexLexer* flexlexer;
-#define yylex() flexlexer->yylex()
-
-void yyerror(const char *s);
-
-
-
+    int  yparse();
+    int  yylex(void);
+    void yyerror(const char *s);
 %}
-
-
 
 %union
 {
     int          i_val;
     double       d_val;
     std::string* s_val;
-    char         id_val[33];
+    AST*         ast;
+    Program*     program_node;
+    /* Routines*    routines_node;
+    Routine*     routine_node; */
 }
-
-
 
     // type keywords
 %token K_INTEGER K_DOUBLE K_STRING
@@ -45,7 +38,6 @@ void yyerror(const char *s);
 
 %token K_RETURN K_EXIT
 
-
     // operators (using C precedence & associavity)
 %left  COMMA
 %right ASSIGN ASSIGN_PLUS ASSIGN_MINUS ASSIGN_MULTIPLY ASSIGN_DIVIDE ASSIGN_MOD
@@ -62,56 +54,54 @@ void yyerror(const char *s);
 %left  LPAREN RPAREN
 %left  INCREMENT DECREMENT
 
-
     // punctuation
 %token SEMI LCURLY RCURLY
-
 
     // terms
 %token <i_val> ICONSTANT
 %token <d_val> DCONSTANT
 %token <s_val> SCONSTANT
-%token <id_val> IDENTIFIER
+%token <s_val> IDENTIFIER
 
+%type <ast> start
+%type <program_node> program
+%type <s_val> routines
+    /* %type <routine_node> routine */
+    /* %type <s_val> type */
+    /* %type <s_val> parameters */
+    /* %type <s_val> block */
 
 %token UNKNOWN
-
-
 
     // start variable
 %start start
 
-
-
 %%
 
-
-
 start
-    : program {}
+    : program { std::cout << *$1; }
     ;
 
 program
-    : K_PROGRAM IDENTIFIER LCURLY routines RCURLY {}
-    | %empty {}
+    : K_PROGRAM IDENTIFIER LCURLY routines RCURLY { $$ = new Program($2, $4); }
     ;
 
 
     // functions
 
 routines
-    : routines routine {}
-    | %empty {}
+    : routines routine { $$ = new std::string("routines," + *$1 + ",routine"); }
+    | %empty { $$ = new std::string("empty"); }
     ;
 
 routine
-    : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block {}
-    | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block {}
+    : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block { }
+    | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block { }
     ;
 
 parameters
-    : declaration {}
-    | %empty {}
+    : declaration { }
+    | %empty { }
     ;
 
 arguments
@@ -123,7 +113,7 @@ arguments
     // statements
 
 block
-    : LCURLY statements RCURLY {}
+    : LCURLY statements RCURLY { }
     ;
 
 statements
@@ -270,11 +260,7 @@ boolean
     | NOT expression {}
     ;
 
-
-
 %%
-
-
 
 void yyerror(const char* s)
 {
