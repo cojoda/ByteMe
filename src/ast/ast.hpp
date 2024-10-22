@@ -112,7 +112,6 @@ public:
     Statements();
     Statements(Statements* statements,
                Statement* statement);
-    virtual ~Statements();
     std::string toString() const;
     void print(std::ostream& os) const override;
 };
@@ -123,8 +122,8 @@ public:
 class Statement : public virtual AST
 {
 public:
-    Statement();
-    virtual ~Statement();
+    Statement() = default;
+    virtual ~Statement() = default;
     std::string toString() const;
     void print(std::ostream& os) const override;
 };
@@ -132,45 +131,45 @@ public:
 
 
 
-class Block : public virtual Statement
-{
+// class Block : public virtual Statement
+// {
 
-};
-
-
-class If_Statement : public virtual Statement
-{
-
-};
+// };
 
 
-class Do_Statement : public virtual Statement
-{
+// class If_Statement : public virtual Statement
+// {
 
-};
-
-
-class Expression : public virtual Statement
-{
-
-};
+// };
 
 
-class Declaration : public virtual Statement
-{
+// class Do_Statement : public virtual Statement
+// {
 
-};
-
-class Assignment : public virtual Statement
-{
-
-};
+// };
 
 
-class Return : public virtual Statement
-{
+// class Expression : public virtual Statement
+// {
 
-};
+// };
+
+
+// class Declaration : public virtual Statement
+// {
+
+// };
+
+// class Assignment : public virtual Statement
+// {
+
+// };
+
+
+// class Return : public virtual Statement
+// {
+
+// };
 
 
 

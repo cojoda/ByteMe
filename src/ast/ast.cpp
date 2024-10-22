@@ -172,8 +172,6 @@ void Statements::print(std::ostream& os) const
 
 
     /* Statement */
-Statement::Statement() {}
-Statement::~Statement() {}
 
 std::string Statement::toString() const
 {
