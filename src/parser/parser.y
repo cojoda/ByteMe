@@ -2,7 +2,7 @@
     #include <iostream>
     #include <string>
     class AST;  // Forward declaration of AST
-    #include "src/parser/ast.hpp"
+    #include "src/ast/ast.hpp"
 
     int  yparse();
     int  yylex(void);
@@ -15,9 +15,10 @@
     double       d_val;
     std::string* s_val;
     AST*         ast;
-    Program*     program_node;
-    /* Routines*    routines_node;
-    Routine*     routine_node; */
+    Routines*    routines_ast;
+    Routine*     routine_ast;
+    Function*    function_ast;
+    Procedure*   procedure_ast;
 }
 
     // type keywords
@@ -64,8 +65,8 @@
 %token <s_val> IDENTIFIER
 %type <ast> start
 %type <ast> program
-%type <s_val> routines
-%type <s_val> routine
+%type <routines_ast> routines
+%type <routine_ast> routine
 %type <s_val> parameters
 %type <s_val> declaration
 %type <s_val> variable_list
@@ -111,14 +112,24 @@ program
 
     // functions
 
+    /* routines
+        : routines routine                                          { $$ = new std::string((*$1).toString() + "\n->" + (*$2).toString()); }
+        | %empty                                                    { $$ = new std::string("empty"); }
+        ; */
+
 routines
-    : routines routine                                          { $$ = new std::string(*$1 + "\n->" + *$2); }
-    | %empty                                                    { $$ = new std::string("empty"); }
+    : routines routine                                          { $$ = new Routines($1, $2); }
+    | %empty                                                    { $$ = new Routines(); }
     ;
 
+    /* routine
+        : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block { $$ = new std::string("(function:" + *$3 + "," + *$5 + ")\n" + "\t->" + *$7); }
+        | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block     { $$ = new std::string("(procedure:" + *$2 + "," + *$4 + ")\n" + "\t->" + *$6); }
+        ; */
+
 routine
-    : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block { $$ = new std::string("(function:" + *$3 + "," + *$5 + ")\n" + "\t->" + *$7); }
-    | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block     { $$ = new std::string("(procedure:" + *$2 + "," + *$4 + ")\n" + "\t->" + *$6); }
+    : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block { $$ = new Function($2, $3, $5, $7); }
+    | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block     { $$ = new Procedure($2, $4, $6); }
     ;
 
 parameters
@@ -150,7 +161,7 @@ statement
     | expression SEMI                                           { $$ = new std::string(*$1 + ";"); }
     | declaration SEMI                                          { $$ = new std::string(*$1); }
     | assignment SEMI                                           { $$ = new std::string("\t\t" + *$1); }
-    | routine                                                   { $$ = new std::string(*$1); }
+    | routine                                                   { $$ = new std::string((*$1).toString()); }
     | K_RETURN SEMI                                             { $$ = new std::string("return;"); }
     | K_RETURN expression SEMI                                  { $$ = new std::string("return (" + *$2 + ");"); }
     | K_RETURN assignment SEMI                                  { $$ = new std::string("return "+ *$2 +";"); }

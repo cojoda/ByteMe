@@ -1,6 +1,6 @@
 %{
     #include <string>
-    #include "src/parser/ast.hpp"
+    #include "src/ast/ast.hpp"
     #include "src/parser/parser.hpp"
 %}
 
