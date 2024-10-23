@@ -1,16 +1,18 @@
 %{
     #include <iostream>
     #include <string>
-    class AST;  // Forward declaration of AST
+
+    class AST;
     #include "src/ast/ast.hpp"
+
     int  yparse();
     int  yylex(void);
-    void yyerror(const char *s);
-    
 
+    // debugging
+    void yyerror(const char *s);
 %}
 
-
+    // debugging
 %define parse.error detailed
 %define api.prefix {yy}
 %define parse.trace
@@ -112,8 +114,6 @@
 %type <s_val> builtin
 %type <arith_ast> arithmetic
 %type <bool_ast> boolean
-
-    /* %token UNKNOWN */
 
     // start variable
 %start start
