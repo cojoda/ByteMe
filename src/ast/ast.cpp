@@ -113,10 +113,12 @@ StatementGroup::StatementGroup() {};
 
 StatementGroup::StatementGroup(StatementGroup* statement_group, Statement* statement)
 {
+    if (statement_group == nullptr)
+        statement_group = this;
+
     if (statement_group->statement_list == nullptr)
-    {
         statement_group->statement_list = new std::vector<Statement*>();
-    }
+    
     statement_group->statement_list->push_back(statement);
     this->statement_list = statement_group->statement_list;
 }
@@ -147,9 +149,7 @@ RoutineGroup::RoutineGroup() {};
 RoutineGroup::RoutineGroup(RoutineGroup* routine_group, Routine* routine)
 {
     if (routine_group->routine_list == nullptr)
-    {
         routine_group->routine_list = new std::vector<Routine*>();
-    }
     routine_group->routine_list->push_back(routine);
     this->routine_list = routine_group->routine_list;
 }
@@ -415,7 +415,7 @@ void Assignment::print(std::ostream& os) const
 
     /* Atomic */
 
-Atomic::Atomic(std::string* name) : name(name) {};
+Atomic::Atomic(std::string* name) : name(name) {std::cerr << "\t\t\t\t\t\t\t\t\t\t" << *name << std::endl;};
 
 std::string Atomic::toString() const
 {
@@ -432,9 +432,9 @@ void Atomic::print(std::ostream& os) const
 
     /* Array */
 
-Array::Array(std::string* name) : name(name) {};
+Array::Array(std::string* name) : name(name) {std::cerr << "\t\t\t\t\t\t\t\t\t\t" <<  *name << std::endl;};
 
-Array::Array(std::string* name, Expression* index) : index(index) {}; 
+Array::Array(std::string* name, Expression* index) : index(index) {std::cerr << *name << std::endl;}; 
 
 std::string Array::toString() const
 {
