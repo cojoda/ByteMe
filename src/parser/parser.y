@@ -3,11 +3,17 @@
     #include <string>
     class AST;  // Forward declaration of AST
     #include "src/ast/ast.hpp"
-
     int  yparse();
     int  yylex(void);
     void yyerror(const char *s);
+    
+
 %}
+
+
+%define parse.error detailed
+%define api.prefix {yy}
+%define parse.trace
 
 %union
 {
@@ -15,10 +21,27 @@
     double       d_val;
     std::string* s_val;
     AST*         ast;
-    Routines*    routines_ast;
-    Routine*     routine_ast;
-    Function*    function_ast;
-    Procedure*   procedure_ast;
+    Program*     prog_ast;
+    RoutineGroup* rout_g_ast;
+    Routine*     rout_ast;
+    Function*    fun_ast;
+    Procedure*   proc_ast;
+    StatementGroup* state_g_ast;
+    Statement*   state_ast;
+    If_Statement* if_ast;
+    Do_Statement* do_ast;
+    VariableGroup* var_g_ast;
+    Variable*   var_ast;
+    Declaration* dec_ast;
+    Return*     ret_ast;
+    Arithmetic*  arith_ast;
+    Boolean*    bool_ast;
+    ExpressionGroup* exp_g_ast;
+    Expression* exp_ast;
+    Reference* ref_ast;
+    Atomic*  atomref_ast;
+    Array*   arrref_ast;
+    Assignment* assign_ast;
 }
 
     // type keywords
@@ -64,33 +87,33 @@
 %token <s_val> SCONSTANT
 %token <s_val> IDENTIFIER
 %type <ast> start
-%type <ast> program
-%type <routines_ast> routines
-%type <routine_ast> routine
-%type <s_val> parameters
-%type <s_val> declaration
-%type <s_val> variable_list
-%type <s_val> variable
+%type <prog_ast> program
+%type <rout_g_ast> routines
+%type <rout_ast> routine
+%type <dec_ast> parameters
+%type <dec_ast> declaration
+%type <var_g_ast> variable_list
+%type <var_ast> variable
 %type <s_val> type
-%type <s_val> block
-%type <s_val> statements
-%type <s_val> statement
-%type <s_val> if
-%type <s_val> then
-%type <s_val> else
-%type <s_val> do
-%type <s_val> for
-%type <s_val> assignment
-%type <s_val> lvalue
-%type <s_val> rvalue
-%type <s_val> arguments
-%type <s_val> expression
-%type <s_val> expression_list
+%type <state_g_ast> block
+%type <state_g_ast> statements
+%type <state_ast> statement
+%type <if_ast> if
+%type <state_ast> then
+%type <state_ast> else
+%type <do_ast> do
+%type <assign_ast> assignment
+%type <ref_ast> reference
+%type <var_ast> binding
+%type <exp_ast> rvalue
+%type <exp_ast> arguments
+%type <exp_ast> expression
+%type <exp_g_ast> expression_list
 %type <s_val> builtin
-%type <s_val> arithmetic
-%type <s_val> boolean
+%type <arith_ast> arithmetic
+%type <bool_ast> boolean
 
-%token UNKNOWN
+    /* %token UNKNOWN */
 
     // start variable
 %start start
@@ -101,10 +124,6 @@ start
     : program                                                   { std::cout << *$1; }
     ;
 
-    /* program
-        : K_PROGRAM IDENTIFIER LCURLY routines RCURLY               { $$ = new std::string("(program:" + *$2 + "\n->" + *$4 + "\n)"); }
-        ; */
-
 program
     : K_PROGRAM IDENTIFIER LCURLY routines RCURLY               { $$ = new Program($2, $4); }
     ;
@@ -112,129 +131,130 @@ program
 
     // functions
 
-    /* routines
-        : routines routine                                          { $$ = new std::string((*$1).toString() + "\n->" + (*$2).toString()); }
-        | %empty                                                    { $$ = new std::string("empty"); }
-        ; */
-
 routines
-    : routines routine                                          { $$ = new Routines($1, $2); }
-    | %empty                                                    { $$ = new Routines(); }
+    : routines routine                                          { $$ = new RoutineGroup($1, $2); }
+    | %empty                                                    { $$ = new RoutineGroup(); }
     ;
-
-    /* routine
-        : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block { $$ = new std::string("(function:" + *$3 + "," + *$5 + ")\n" + "\t->" + *$7); }
-        | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block     { $$ = new std::string("(procedure:" + *$2 + "," + *$4 + ")\n" + "\t->" + *$6); }
-        ; */
 
 routine
     : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block { $$ = new Function($2, $3, $5, $7); }
     | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block     { $$ = new Procedure($2, $4, $6); }
     ;
 
+    // Declaration : Variable
 parameters
-    : declaration                                               { $$ = new std::string(*$1); }
-    | %empty                                                    { $$ = new std::string("empty"); }
+    : declaration                                               { $$ = $1; }
+    | %empty                                                    { $$ = nullptr; }
     ;
 
+    // ExpressionGroup : Expression
 arguments
-    : expression_list                                           { $$ = new std::string(*$1); }
-    | %empty                                                    { $$ = new std::string("empty"); }
+    : expression_list                                           { $$ = $1; }
+    | %empty                                                    { $$ = nullptr; }
     ;
 
 
     // statements
 
-block
-    : LCURLY statements RCURLY                                  { $$ = new std::string("{" + *$2 + "}"); }
-    ;
-
-statements
-    : statements statement                                      { $$ = new std::string( *$1 + "\n\t\t->" + *$2); }
-    | %empty                                                    { $$ = new std::string("empty"); }
-    ;
-
+    // TODO can we handle nullptr here?
 statement
-    : block                                                     { $$ = new std::string( *$1 ); }
-    | if                                                        { $$ = new std::string(*$1); }
-    | do                                                        { $$ = new std::string(*$1); }
-    | expression SEMI                                           { $$ = new std::string(*$1 + ";"); }
-    | declaration SEMI                                          { $$ = new std::string(*$1); }
-    | assignment SEMI                                           { $$ = new std::string("\t\t" + *$1); }
-    | routine                                                   { $$ = new std::string((*$1).toString()); }
-    | K_RETURN SEMI                                             { $$ = new std::string("return;"); }
-    | K_RETURN expression SEMI                                  { $$ = new std::string("return (" + *$2 + ");"); }
-    | K_RETURN assignment SEMI                                  { $$ = new std::string("return "+ *$2 +";"); }
-    | SEMI                                                      { $$ = new std::string(";"); }
+    : block                                                     { $$ = $1; }
+    | if                                                        { $$ = $1; }
+    | do                                                        { $$ = $1; }
+    | expression SEMI                                           { $$ = $1; }
+    | declaration SEMI                                          { $$ = $1; }
+    | assignment SEMI                                           { $$ = $1; }
+    | routine                                                   { $$ = $1; }
+    | K_RETURN SEMI                                             { $$ = new Return(); }
+    | K_RETURN expression SEMI                                  { $$ = new Return($2); }
+    | K_RETURN assignment SEMI                                  { $$ = new Return($2); }
+    | SEMI                                                      { $$ = nullptr; }
+    ;
+
+    // StatementGroup : Statement
+block
+    : LCURLY statements RCURLY                                  { $$ = $2; }
+    ;
+
+    // StatementGroup : Statement
+statements
+    : statements statement                                      { $$ = new StatementGroup($1, $2); }
+    | %empty                                                    { $$ = nullptr; }
     ;
 
 
     // control statements
 
 if
-    : K_IF LPAREN expression RPAREN then %prec LOWER_THAN_ELSE  { $$ = new std::string("if (" + *$3 + ")" + *$5); }
-    | K_IF LPAREN expression RPAREN then else                   { $$ = new std::string("if (" + *$3 + ")" + *$5 + *$6); }
+    : K_IF LPAREN expression RPAREN then %prec LOWER_THAN_ELSE  { $$ = new If_Statement($3, $5); }
+    | K_IF LPAREN expression RPAREN then else                   { $$ = new If_Statement($3, $5, $6); }
     ;
 
 then
-    : K_THEN statement                                          { $$ = new std::string("\n\t\t\tthen:" + *$2); }
+    : K_THEN statement                                          { $$ = $2; }
     ;
 
 else
-    : K_ELSE statement                                          { $$ = new std::string("\n\t\telse:" + *$2); }
+    : K_ELSE statement                                          { $$ = $2;}
     ;
 
 do
-    : for { $$ = $1; }
-    | K_DO K_WHILE LPAREN expression RPAREN statement           { $$ = new std::string("do while (" + *$4 + ")" + *$6); }
-    | K_DO K_UNTIL LPAREN expression RPAREN statement           { $$ = new std::string("do until (" + *$4 + ")" + *$6); }
-    ;
-
-for
-    : K_DO LPAREN variable SEMI expression SEMI expression RPAREN statement
-                                                                { $$ = new std::string("do (" + *$3 + "; " + *$5 + "; " + *$7 + ")" + *$9); }
+    : K_DO LPAREN variable SEMI expression SEMI expression RPAREN statement {}  { $$ = new Do_Statement($3, $5, $7, $9); }
+    | K_DO K_WHILE LPAREN expression RPAREN statement                           { $$ = new Do_Statement(nullptr, $4, nullptr, $4); }
+    | K_DO K_UNTIL LPAREN expression RPAREN statement                           { $$ = new Do_Statement(nullptr, $4, nullptr, $4); }
     ;
 
 
     // variables
 
-declaration
-    : type variable_list                                        { $$ = new std::string("|" + *$1 + ":" + *$2); }
-    ;
 
-variable_list
-    : variable                                                  { $$ = new std::string(*$1); }
-    | variable_list COMMA variable                              { $$ = new std::string(*$1 + "," + *$3); }
-    ;
-
+    // class Variable : class Expression
 variable
-    : IDENTIFIER LBRACKET RBRACKET                              { $$ = new std::string(*$1 + "[]"); }
-    | IDENTIFIER LBRACKET expression RBRACKET                   { $$ = new std::string(*$1 + "[" + *$3 + "]"); }
-    | declaration                                               {$$ = new std::string(*$1);}
-    | assignment                                                { $$ = new std::string(*$1); }
-    | IDENTIFIER                                                { $$ = new std::string(*$1); }
+    : reference                                                 { $$ = $1; }
+    | binding                                                   { $$ = $1; }
     ;
 
+    // class VariableGroup : class Variable
+variable_list
+    : variable                                                  { $$ = new VariableGroup($1); }
+    | variable_list COMMA variable                              { $$ = new VariableGroup($1, $3); }
+    ;
+
+    // class Reference : class Variable
+reference
+    : IDENTIFIER LBRACKET RBRACKET                              { $$ = new Array($1); }
+    | IDENTIFIER LBRACKET expression RBRACKET                   { $$ = new Array($1, $3); }
+    | IDENTIFIER                                                { $$ = new Atomic($1); }
+    ;
+
+    // Variable -> Variable
+binding
+    : declaration                                               { $$ = $1; }
+    | assignment                                                { $$ = $1; }
+    ;
+
+    // class Assignment : class Variable
 assignment
-    : lvalue ASSIGN rvalue                                      { $$ = new std::string("("+ *$1 + "=" + *$3 + ")"); }
-    | lvalue ASSIGN_PLUS rvalue                                 { $$ = new std::string("("+ *$1 + "+=" + *$3 + ")"); }
-    | lvalue ASSIGN_MINUS rvalue                                { $$ = new std::string("("+ *$1 + "-=" + *$3 + ")"); }
-    | lvalue ASSIGN_MULTIPLY rvalue                             { $$ = new std::string("("+ *$1 + "*=" + *$3 + ")"); }
-    | lvalue ASSIGN_DIVIDE rvalue                               { $$ = new std::string("("+ *$1 + "/=" + *$3 + ")"); }
-    | lvalue ASSIGN_MOD rvalue                                  { $$ = new std::string("("+ *$1 + "%=" + *$3 + ")"); }
+    : reference ASSIGN rvalue                                   { $$ = new Assignment($1, $3, new std::string(":=")); }
+    | reference ASSIGN_PLUS rvalue                              { $$ = new Assignment($1, $3, new std::string("+=")); }
+    | reference ASSIGN_MINUS rvalue                             { $$ = new Assignment($1, $3, new std::string("-=")); }
+    | reference ASSIGN_MULTIPLY rvalue                          { $$ = new Assignment($1, $3, new std::string("*=")); }
+    | reference ASSIGN_DIVIDE rvalue                            { $$ = new Assignment($1, $3, new std::string("/=")); }
+    | reference ASSIGN_MOD rvalue                               { $$ = new Assignment($1, $3, new std::string("%=")); }
     ;
 
-lvalue
-    : IDENTIFIER                                                { $$ = new std::string(*$1); }
-    | IDENTIFIER LBRACKET expression RBRACKET                   { $$ = new std::string(*$1 + "[" + *$3 + "]"); }
-    | IDENTIFIER LBRACKET RBRACKET                              { $$ = new std::string(*$1 + "[]"); }
-    ;
-
+    // Expression -> Expression (assignment : variable : expression)
 rvalue
-    : expression                                                { $$ = new std::string(*$1); }
-    | assignment                                                { $$ = new std::string(*$1); }
+    : expression                                                { $$ = $1; }
+    | assignment                                                { $$ = $1; }
     ;
 
+    // class Declaration : class Variable
+declaration
+    : type variable_list                                        { $$ = new Declaration($1, $2); }
+    ;
+
+    // std::string
 type
     : K_INTEGER                                                 { $$ = new std::string("integer"); }
     | K_DOUBLE                                                  { $$ = new std::string("double"); }
@@ -244,22 +264,23 @@ type
 
     // expressions
 
+    // class Expression : class Statement
 expression
-    : arithmetic {}                                             { $$ = new std::string("(" + *$1 + ")"); }
-    | boolean {}                                                { $$ = new std::string("(" + *$1 + ")"); }
-    | builtin LPAREN arguments RPAREN {}                        { $$ = new std::string("(" + *$1 + "|" + *$3 + ")"); }
-    | LPAREN expression RPAREN {}                               { $$ = new std::string("(" + *$2 + ")"); }
-    | IDENTIFIER LPAREN arguments RPAREN {}                     { $$ = new std::string("(" + *$1 + "(" + *$3 + "))"); }
-    | IDENTIFIER LBRACKET expression RBRACKET                   { $$ = new std::string("(" + *$1 + "[" + *$3 + "])"); }
-    | ICONSTANT                                                 { $$ = new std::string(std::to_string($1)); }
-    | DCONSTANT                                                 { $$ = new std::string(std::to_string($1)); }
-    | SCONSTANT                                                 { $$ = new std::string(*$1); }
-    | IDENTIFIER                                                { $$ = new std::string(*$1); }
+    : arithmetic {}                                             { $$ = $1; }
+    | boolean {}                                                { $$ = $1; }
+    | builtin LPAREN arguments RPAREN {}                        { $$ = nullptr; }
+    | LPAREN expression RPAREN {}                               { $$ = $2 ;}
+    | IDENTIFIER LPAREN arguments RPAREN {}                     { $$ = new Array($1, $3);}
+    | IDENTIFIER LBRACKET expression RBRACKET                   { $$ = new Array($1, $3); }
+    | ICONSTANT                                                 { $$ = new Constant(new int($1)); }
+    | DCONSTANT                                                 { $$ = new Constant(new double($1)) ; }
+    | SCONSTANT                                                 { $$ = new Constant($1) ; }
+    | IDENTIFIER                                                { $$ = new Constant($1) ; }
     ;
 
 expression_list
-    : expression                                                { $$ = new std::string(*$1); }
-    | expression_list COMMA expression                          { $$ = new std::string(*$1 + ", " + *$3); }
+    : expression                                                { $$ = new ExpressionGroup($1); }
+    | expression_list COMMA expression                          { $$ = new ExpressionGroup($1, $3); }
     ;
 
 builtin
@@ -271,28 +292,30 @@ builtin
     | K_READ_STRING                                             { $$ = new std::string("(procedure:read_string"); }
     ;
 
+    // class Arithmetic : class Expression?
 arithmetic
-    : expression PLUS expression                                { $$ = new std::string(*$1 + "+" + *$3); }
-    | expression MINUS expression                               { $$ = new std::string(*$1 + "-" + *$3); }
-    | expression MULTIPLY expression                            { $$ = new std::string(*$1 + "*" + *$3); }
-    | expression DIVIDE expression                              { $$ = new std::string(*$1 + "/" + *$3); }
-    | expression MOD expression                                 { $$ = new std::string(*$1 + "%" + *$3); }
-    | expression POW expression                                 { $$ = new std::string(*$1 + "^" + *$3); }
-    | expression INCREMENT                                      { $$ = new std::string(*$1 + "++"); }
-    | expression DECREMENT                                      { $$ = new std::string(*$1 + "--"); }
-    | MINUS expression                                          { $$ = new std::string("-" + *$2); }
+    : expression PLUS expression                                { $$ = new Arithmetic($1, $3, new std::string( "+")); }
+    | expression MINUS expression                               { $$ = new Arithmetic($1, $3, new std::string( "-")); }
+    | expression MULTIPLY expression                            { $$ = new Arithmetic($1, $3, new std::string( "*")); }
+    | expression DIVIDE expression                              { $$ = new Arithmetic($1, $3, new std::string( "/")); }
+    | expression MOD expression                                 { $$ = new Arithmetic($1, $3, new std::string( "%")); }
+    | expression POW expression                                 { $$ = new Arithmetic($1, $3, new std::string( "^")); }
+    | expression INCREMENT                                      { $$ = new Arithmetic($1, new std::string( "++")); }
+    | expression DECREMENT                                      { $$ = new Arithmetic($1, new std::string( "--")); }
+    | MINUS expression                                          { $$ = new Arithmetic($2, new std::string( "-")); }
     ;
 
+    
 boolean
-    : expression GT expression                                  { $$ = new std::string(*$1 + ">" + *$3); }
-    | expression GEQ expression                                 { $$ = new std::string(*$1 + ">=" + *$3); }
-    | expression LT expression                                  { $$ = new std::string(*$1 + "<" + *$3); }
-    | expression LEQ expression                                 { $$ = new std::string(*$1 + "<=" + *$3); }
-    | expression DEQ expression                                 { $$ = new std::string(*$1 + "==" + *$3); }
-    | expression NE expression                                  { $$ = new std::string(*$1 + "!=" + *$3); }
-    | expression DAND expression                                { $$ = new std::string(*$1 + "&&" + *$3); }
-    | expression DOR expression                                 { $$ = new std::string(*$1 + "||" + *$3); }
-    | NOT expression                                            { $$ = new std::string("!" + *$2); }
+    : expression GT expression                                  { $$ = new Boolean($1, $3, new std::string(">")); }
+    | expression GEQ expression                                 { $$ = new Boolean($1, $3, new std::string(">=")); }
+    | expression LT expression                                  { $$ = new Boolean($1, $3, new std::string("<")); }
+    | expression LEQ expression                                 { $$ = new Boolean($1, $3, new std::string("<=")); }
+    | expression DEQ expression                                 { $$ = new Boolean($1, $3, new std::string("==")); }
+    | expression NE expression                                  { $$ = new Boolean($1, $3, new std::string("!=")); }
+    | expression DAND expression                                { $$ = new Boolean($1, $3, new std::string("&&")); }
+    | expression DOR expression                                 { $$ = new Boolean($1, $3, new std::string("||")); }
+    | NOT expression                                            { $$ = new Boolean($2, new std::string("!")); }
     ;
 
 %%
