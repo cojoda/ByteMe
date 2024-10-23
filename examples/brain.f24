@@ -2,6 +2,7 @@
 //
 // BF Interpreter
 // (Probably interprets the esoteric programming language known as Brainf***? Kinda hard to test right now ...)
+// Yes, this is the code for an interpreter written for the explicit purpose to test my compiler!
 // Programming Inception... ;)
 //
 // Cody Danielson
