@@ -25,6 +25,8 @@ public:
     virtual std::string toString() const;
     virtual void print(std::ostream& os) const;
     friend std::ostream& operator<<(std::ostream& os, const AST& ast);
+    friend std::string operator+(const AST& ast, const std::string& str);
+    friend std::string operator+(const std::string& str, const AST& ast);
 };
 
 
@@ -181,13 +183,13 @@ public:
 class Procedure : public virtual Routine
 {
 private:
-    std::string*    type;
+    std::string*    name;
     Declaration*    parameters;
     StatementGroup* block;
 public:
     Procedure();
 
-    Procedure(std::string*    type,
+    Procedure(std::string*    name,
               Declaration*    parameters,
               StatementGroup* block);
 

@@ -121,7 +121,7 @@
 %%
 
 start
-    : program                                                   { std::cout << *$1; }
+    : program                                                   { std::cerr << *$1; }
     ;
 
 program

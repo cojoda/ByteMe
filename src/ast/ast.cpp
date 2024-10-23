@@ -7,8 +7,7 @@
 
 std::string AST::toString() const
 {
-    std::string* result = new std::string("AST Class Output");
-    return *result;
+    return "AST Class Output";
 }
 
 void AST::print(std::ostream& os) const
@@ -23,6 +22,17 @@ std::ostream& operator<<(std::ostream& os, const AST& ast)
     return os;
 }
 
+std::string operator+(const AST& ast, const std::string& str)
+{
+    return ast.toString() + str;
+}
+
+std::string operator+(const std::string& str, const AST& ast)
+{
+    return str + ast.toString();
+}
+
+
 
 
 
@@ -30,8 +40,7 @@ std::ostream& operator<<(std::ostream& os, const AST& ast)
 
 std::string Statement::toString() const
 {
-    std::string* result = new std::string("Statement class output");
-    return *result;
+    return "Statement class output";
 }
 
 
@@ -46,8 +55,7 @@ Routine::~Routine() {}
 
 std::string Routine::toString() const
 {
-    std::string* result = new std::string("Routine class output");
-    return *result;
+    return "Routine class output";
 }
 
 
@@ -59,8 +67,7 @@ std::string Routine::toString() const
 
 std::string Expression::toString() const
 {
-    std::string* result = new std::string("Expression class output");
-    return *result;
+    return "Expression class output";
 }
 
 
@@ -72,8 +79,7 @@ std::string Expression::toString() const
 
 std::string Variable::toString() const
 {
-    std::string* result = new std::string("Variable class output");
-    return *result;
+    return "Variable class output";
 }
 
 
@@ -85,7 +91,7 @@ std::string Variable::toString() const
 
 std::string Reference::toString() const
 {
-    return std::string("Reference class output");
+    return "Reference class output";
 }
 
 
@@ -112,13 +118,11 @@ StatementGroup::StatementGroup(StatementGroup* statement_group,
 
 std::string StatementGroup::toString() const
 {
-    std::string* result = new std::string();
+    std::string result = std::string();
     for (Statement* item : *statement_list) {
-        if (item) {
-            result->append(item->toString() + "\n");
-        }
+        result += (item ? (*item + "\n") : "");
     }
-    return *result;
+    return result;
 }
 
 
@@ -133,21 +137,23 @@ RoutineGroup::RoutineGroup() {};
 RoutineGroup::RoutineGroup(RoutineGroup* routine_group,
                            Routine*      routine)
 {
+    if (routine_group == nullptr)
+        routine_group = this;
+
     if (routine_group->routine_list == nullptr)
         routine_group->routine_list = new std::vector<Routine*>();
+
     routine_group->routine_list->push_back(routine);
     this->routine_list = routine_group->routine_list;
 }
 
 std::string RoutineGroup::toString() const
 {
-    std::string* result = new std::string();
+    std::string result = std::string();
     for (Routine* item : *routine_list) {
-        if (item) {
-            result->append(item->toString() + "\n");
-        }
+        result += (item ? (item->toString() + '\n') : "");
     }
-    return *result;
+    return result;
 }
 
 
@@ -175,13 +181,11 @@ ExpressionGroup::ExpressionGroup(ExpressionGroup* expression_group,
 
 std::string ExpressionGroup::toString() const
 {
-    std::string* result = new std::string();
+    std::string result = std::string();
     for (Expression* item : *expression_list) {
-        if (item) {
-            result->append(item->toString() + "\n");
-        }
+        result += (item ? item->toString() : "");
     }
-    return *result;
+    return result;
 }
 
 
@@ -209,13 +213,11 @@ VariableGroup::VariableGroup(VariableGroup* variable_group,
 
 std::string VariableGroup::toString() const
 {
-    std::string* result = new std::string();
+    std::string result = std::string();
     for (Variable* item : *variable_list) {
-        if (item) {
-            result->append(item->toString() + "\n");
-        }
+        result += (item ? item->toString() : "");
     }
-    return *result;
+    return result;
 }
 
 
@@ -231,8 +233,8 @@ Program::Program(std::string*  name,
 
 std::string Program::toString() const
 {
-    std::string* result = new std::string("(program:" + *name + "\n" + routine_group->toString() + ")");
-    return *result;
+    return "(program:" + *name
+                       + "\n" + *routine_group + ")";
 }
 
 
@@ -253,8 +255,10 @@ Function::Function(std::string*    type,
 
 std::string Function::toString() const
 {
-    std::string* result = new std::string("Statement class output");
-    return *result;
+    return "(function:" + *type + ","
+                        + *name + ","
+                        + (parameters ? parameters->toString() : "")
+                        + "\n" + *block + ")";
 }
 
 
@@ -265,16 +269,17 @@ std::string Function::toString() const
 
 Procedure::Procedure() {};
 
-Procedure::Procedure(std::string*    type,
+Procedure::Procedure(std::string*    name,
                      Declaration*    parameters,
-                     StatementGroup* block) : type(type),
+                     StatementGroup* block) : name(name),
                                               parameters(parameters),
                                               block(block) {}
 
 std::string Procedure::toString() const
 {
-    std::string* result = new std::string("Statement class output");
-    return *result;
+    return "(procedure:" + *name + ","
+                         + *parameters
+                         + "\n\t" + block->toString() + ")";
 }
 
 
@@ -294,10 +299,9 @@ If_Statement::If_Statement(Expression* condition,
 
 std::string If_Statement::toString() const
 {
-    std::string result = std::string("if then ");
-    if (else_statement != nullptr)
-        result.append("else");
-    return result;
+    return "(if:" + *condition + "(then "
+                  + "\n\t\t" + *then_statement + ")"
+                  + (else_statement ? "(else\n\t\t" + *else_statement + ")" : ")");
 }
 
 
@@ -317,7 +321,7 @@ Do_Statement::Do_Statement(Variable*   initialization,
 
 std::string Do_Statement::toString() const
 {
-    return std::string("Do_Statement class output");
+    return "Do_Statement class output";
 }
 
 
@@ -331,8 +335,7 @@ Return::Return(Expression* value) : value(value) {};
 
 std::string Return::toString() const
 {
-    std::string* result = new std::string("Return class output");
-    return *result;
+    return "(Return:" + (value ? value->toString() : "") + ")";
 }
 
 
@@ -348,7 +351,8 @@ Declaration::Declaration(std::string*   type,
 
 std::string Declaration::toString() const
 {
-    return std::string("Declaration Class output");
+    return  (type           ? *type                      : "")
+          + (variable_group ? variable_group->toString() : "");
 }
 
 
@@ -365,10 +369,8 @@ Assignment::Assignment(Reference*   lvalue,
 
 std::string Assignment::toString() const
 {
-    std::string* result = new std::string("Assignment class output");
-    return *result;
+    return lvalue->toString() + *operation + rvalue->toString();
 }
-
 
 
 
@@ -380,7 +382,7 @@ Atomic::Atomic(std::string* name) : name(name) {};
 
 std::string Atomic::toString() const
 {
-    return std::string("Atomic Class output");
+    return *name;
 }
 
 
@@ -397,7 +399,8 @@ Array::Array(std::string* name,
 
 std::string Array::toString() const
 {
-    return std::string("Array Class output");
+    return (name  ? *name                : "")
+         + (index ? ("[" + *index + "]") : "");
 }
 
 
@@ -411,8 +414,7 @@ Constant::Constant(void* value) : value(value) {}
 
 std::string Constant::toString() const
 {
-    std::string* result = new std::string("Constant class output");
-    return *result;
+    return (value ? *((std::string*)value) : "");
 }
 
 
@@ -433,8 +435,9 @@ Arithmetic::Arithmetic(Expression*  loperand,
 
 std::string Arithmetic::toString() const
 {
-    std::string* result = new std::string("Arithmetic class output");
-    return *result;
+    return (loperand  ? loperand->toString() : "")
+         + (operation ? *operation           : "")
+         + (roperand  ? roperand->toString() : "");
 }
 
 
@@ -455,10 +458,7 @@ Boolean::Boolean(Expression*  loperand,
 
 std::string Boolean::toString() const
 {
-    std::string* result = new std::string("Boolean class output");
-    return *result;
+    return (loperand  ? loperand->toString() : "")
+         + (operation ? *operation           : "")
+         + (roperand  ? roperand->toString() : "");
 }
-
-
-
-
