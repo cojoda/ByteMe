@@ -111,7 +111,8 @@ void Reference::print(std::ostream& os) const
 
 StatementGroup::StatementGroup() {};
 
-StatementGroup::StatementGroup(StatementGroup* statement_group, Statement* statement)
+StatementGroup::StatementGroup(StatementGroup* statement_group,
+                               Statement*      statement)
 {
     if (statement_group == nullptr)
         statement_group = this;
@@ -146,7 +147,8 @@ void StatementGroup::print(std::ostream& os) const
 
 RoutineGroup::RoutineGroup() {};
 
-RoutineGroup::RoutineGroup(RoutineGroup* routine_group, Routine* routine)
+RoutineGroup::RoutineGroup(RoutineGroup* routine_group,
+                           Routine*      routine)
 {
     if (routine_group->routine_list == nullptr)
         routine_group->routine_list = new std::vector<Routine*>();
@@ -182,7 +184,8 @@ ExpressionGroup::ExpressionGroup(Expression* expression)
     expression_list->push_back(expression);
 }
 
-ExpressionGroup::ExpressionGroup(ExpressionGroup* expression_group, Expression* expression)
+ExpressionGroup::ExpressionGroup(ExpressionGroup* expression_group,
+                                 Expression*      expression)
 {
     if (expression_group->expression_list == nullptr)
         expression_group->expression_list = new std::vector<Expression*>();
@@ -248,11 +251,12 @@ void VariableGroup::print(std::ostream& os) const
 
     /* Program */
 
-Program::Program(std::string* name, RoutineGroup* routine_group) : name(name), routine_group(routine_group) {}
+Program::Program(std::string*  name,
+                 RoutineGroup* routine_group) : name(name),
+                                                routine_group(routine_group) {}
 
 std::string Program::toString() const
 {
-    // std::string* result = new std::string("");
     std::string* result = new std::string("(program:" + *name + "\n" + routine_group->toString() + ")");
     return *result;
 }
@@ -268,10 +272,13 @@ void Program::print(std::ostream& os) const
 
 Function::Function() {};
 
-Function::Function(std::string*       type,
-                   std::string*       name,
-                   Declaration*       parameters,
-                   StatementGroup*    block): type(type), name(name), parameters(parameters), block(block) {}
+Function::Function(std::string*    type,
+                   std::string*    name,
+                   Declaration*    parameters,
+                   StatementGroup* block): type(type),
+                                           name(name),
+                                           parameters(parameters),
+                                           block(block) {}
 
 std::string Function::toString() const
 {
@@ -290,9 +297,11 @@ void Function::print(std::ostream& os) const
 
 Procedure::Procedure() {};
 
-Procedure::Procedure(std::string*      type,
-                     Declaration*      parameters,
-                     StatementGroup*   block) : type(type), parameters(parameters), block(block) {}
+Procedure::Procedure(std::string*    type,
+                     Declaration*    parameters,
+                     StatementGroup* block) : type(type),
+                                              parameters(parameters),
+                                              block(block) {}
 
 std::string Procedure::toString() const
 {
@@ -311,12 +320,12 @@ void Procedure::print(std::ostream& os) const
     /* If Statement */
 If_Statement::If_Statement(Expression* condition,
                            Statement*  then_statement) : condition(condition),
-                                                          then_statement(then_statement) {}
+                                                         then_statement(then_statement) {}
 If_Statement::If_Statement(Expression* condition,
                            Statement*  then_statement,
                            Statement*  else_statement) : condition(condition),
-                                                          then_statement(then_statement),
-                                                          else_statement(else_statement) {}
+                                                         then_statement(then_statement),
+                                                         else_statement(else_statement) {}
 
 std::string If_Statement::toString() const
 {
@@ -397,7 +406,9 @@ void Declaration::print(std::ostream& os) const
 
 Assignment::Assignment(Reference*   lvalue,
                        Expression*  rvalue,
-                       std::string* operation) : lvalue(lvalue), rvalue(rvalue), operation(operation) {};
+                       std::string* operation) : lvalue(lvalue),
+                                                 rvalue(rvalue),
+                                                 operation(operation) {};
 
 std::string Assignment::toString() const
 {
@@ -415,7 +426,7 @@ void Assignment::print(std::ostream& os) const
 
     /* Atomic */
 
-Atomic::Atomic(std::string* name) : name(name) {std::cerr << "\t\t\t\t\t\t\t\t\t\t" << *name << std::endl;};
+Atomic::Atomic(std::string* name) : name(name) {};
 
 std::string Atomic::toString() const
 {
@@ -432,9 +443,10 @@ void Atomic::print(std::ostream& os) const
 
     /* Array */
 
-Array::Array(std::string* name) : name(name) {std::cerr << "\t\t\t\t\t\t\t\t\t\t" <<  *name << std::endl;};
+Array::Array(std::string* name) : name(name) {};
 
-Array::Array(std::string* name, Expression* index) : index(index) {std::cerr << *name << std::endl;}; 
+Array::Array(std::string* name,
+             Expression*  index) : index(index) {}; 
 
 std::string Array::toString() const
 {
@@ -469,8 +481,8 @@ void Constant::print(std::ostream& os) const
     /* Arithmetic */
 
 Arithmetic::Arithmetic(Expression*  operand,
-                                 std::string* operation) : roperand(operand),
-                                                           operation(operation) {};
+                       std::string* operation) : roperand(operand),
+                                                 operation(operation) {};
 
 Arithmetic::Arithmetic(Expression*  loperand,
                        Expression*  roperand,
@@ -494,8 +506,8 @@ void Arithmetic::print(std::ostream& os) const
     /* Boolean */
 
 Boolean::Boolean(Expression*  operand,
-                           std::string* operation) : roperand(operand),
-                                                     operation(operation) {};
+                 std::string* operation) : roperand(operand),
+                                           peration(operation) {};
 
 Boolean::Boolean(Expression*  loperand,
                  Expression*  roperand,
