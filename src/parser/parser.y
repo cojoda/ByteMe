@@ -141,13 +141,11 @@ routine
     | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block     { $$ = new Procedure($2, $4, $6); }
     ;
 
-    // Declaration : Variable
 parameters
     : declaration                                               { $$ = $1; }
     | %empty                                                    { $$ = nullptr; }
     ;
 
-    // ExpressionGroup : Expression
 arguments
     : expression_list                                           { $$ = $1; }
     | %empty                                                    { $$ = nullptr; }
@@ -156,7 +154,6 @@ arguments
 
     // statements
 
-    // TODO can we handle nullptr here?
 statement
     : block                                                     { $$ = $1; }
     | if                                                        { $$ = $1; }
@@ -171,12 +168,10 @@ statement
     | SEMI                                                      { $$ = nullptr; }
     ;
 
-    // StatementGroup : Statement
 block
     : LCURLY statements RCURLY                                  { $$ = $2; }
     ;
 
-    // StatementGroup : Statement
 statements
     : statements statement                                      { $$ = new StatementGroup($1, $2); }
     | %empty                                                    { $$ = nullptr; }
@@ -207,33 +202,27 @@ do
 
     // variables
 
-
-    // class Variable : class Expression
 variable
     : reference                                                 { $$ = $1; }
     | binding                                                   { $$ = $1; }
     ;
 
-    // class VariableGroup : class Variable
 variable_list
     : variable                                                  { $$ = new VariableGroup($1); }
     | variable_list COMMA variable                              { $$ = new VariableGroup($1, $3); }
     ;
 
-    // class Reference : class Variable
 reference
     : IDENTIFIER LBRACKET RBRACKET                              { $$ = new Array($1); }
     | IDENTIFIER LBRACKET expression RBRACKET                   { $$ = new Array($1, $3); }
     | IDENTIFIER                                                { $$ = new Atomic($1); }
     ;
 
-    // Variable -> Variable
 binding
     : declaration                                               { $$ = $1; }
     | assignment                                                { $$ = $1; }
     ;
 
-    // class Assignment : class Variable
 assignment
     : reference ASSIGN rvalue                                   { $$ = new Assignment($1, $3, new std::string(":=")); }
     | reference ASSIGN_PLUS rvalue                              { $$ = new Assignment($1, $3, new std::string("+=")); }
@@ -243,18 +232,15 @@ assignment
     | reference ASSIGN_MOD rvalue                               { $$ = new Assignment($1, $3, new std::string("%=")); }
     ;
 
-    // Expression -> Expression (assignment : variable : expression)
 rvalue
     : expression                                                { $$ = $1; }
     | assignment                                                { $$ = $1; }
     ;
 
-    // class Declaration : class Variable
 declaration
     : type variable_list                                        { $$ = new Declaration($1, $2); }
     ;
 
-    // std::string
 type
     : K_INTEGER                                                 { $$ = new std::string("integer"); }
     | K_DOUBLE                                                  { $$ = new std::string("double"); }
@@ -264,7 +250,6 @@ type
 
     // expressions
 
-    // class Expression : class Statement
 expression
     : arithmetic {}                                             { $$ = $1; }
     | boolean {}                                                { $$ = $1; }
@@ -292,7 +277,6 @@ builtin
     | K_READ_STRING                                             { $$ = new std::string("(procedure:read_string"); }
     ;
 
-    // class Arithmetic : class Expression?
 arithmetic
     : expression PLUS expression                                { $$ = new Arithmetic($1, $3, new std::string( "+")); }
     | expression MINUS expression                               { $$ = new Arithmetic($1, $3, new std::string( "-")); }
