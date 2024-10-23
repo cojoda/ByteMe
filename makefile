@@ -52,7 +52,7 @@ src/lexer/lexer.cpp: src/lexer/lexer.l
 	$(FLEX) -o src/lexer/lexer.cpp src/lexer/lexer.l
 
 src/parser/parser.cpp src/parser/parser.hpp: src/parser/parser.y
-	$(BISON) -d src/parser/parser.y -o src/parser/parser.cpp
+	$(BISON) -d -v src/parser/parser.y -o src/parser/parser.cpp
 
 
 

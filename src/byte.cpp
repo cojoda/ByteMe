@@ -2,14 +2,12 @@
 #include <iostream>
 
 
-
-// yyFlexLexer* flexlexer;  // Declare the flexlexer instance (static pointer to heap allocation)
-int yyparse();  // Declare the parser function
+int yyparse(); 
+extern int yydebug;
 
 
 int main(int argc, char** argv) 
 {
-    // flexlexer = new yyFlexLexer();
+    yydebug = 1;
     return yyparse();
-    
 }
