@@ -5,8 +5,8 @@
     class AST;
     #include "src/ast/ast.hpp"
 
-    int  yparse();
-    int  yylex(void);
+    int yparse();
+    int yylex(void);
 
     // debugging
     void yyerror(const char *s);
@@ -19,31 +19,31 @@
 
 %union
 {
-    int          i_val;
-    double       d_val;
-    std::string* s_val;
-    AST*         ast;
-    Program*     prog_ast;
-    RoutineGroup* rout_g_ast;
-    Routine*     rout_ast;
-    Function*    fun_ast;
-    Procedure*   proc_ast;
-    StatementGroup* state_g_ast;
-    Statement*   state_ast;
-    If_Statement* if_ast;
-    Do_Statement* do_ast;
-    VariableGroup* var_g_ast;
-    Variable*   var_ast;
-    Declaration* dec_ast;
-    Return*     ret_ast;
-    Arithmetic*  arith_ast;
-    Boolean*    bool_ast;
+    int              i_val;
+    double           d_val;
+    std::string*     s_val;
+    AST*             ast;
+    Program*         prog_ast;
+    RoutineGroup*    rout_g_ast;
+    Routine*         rout_ast;
+    Function*        fun_ast;
+    Procedure*       proc_ast;
+    StatementGroup*  state_g_ast;
+    Statement*       state_ast;
+    If_Statement*    if_ast;
+    Do_Statement*    do_ast;
+    VariableGroup*   var_g_ast;
+    Variable*        var_ast;
+    Declaration*     dec_ast;
+    Return*          ret_ast;
+    Arithmetic*      arith_ast;
+    Boolean*         bool_ast;
     ExpressionGroup* exp_g_ast;
-    Expression* exp_ast;
-    Reference* ref_ast;
-    Atomic*  atomref_ast;
-    Array*   arrref_ast;
-    Assignment* assign_ast;
+    Expression*      exp_ast;
+    Reference*       ref_ast;
+    Atomic*          atomref_ast;
+    Array*           arrref_ast;
+    Assignment*      assign_ast;
 }
 
     // type keywords
@@ -58,7 +58,7 @@
     // statement keywords
 %token K_DO K_WHILE K_UNTIL
 
-%token K_IF K_THEN
+%token    K_IF K_THEN
 %nonassoc LOWER_THAN_ELSE
 %nonassoc K_ELSE
 
@@ -88,32 +88,32 @@
 %token <d_val> DCONSTANT
 %token <s_val> SCONSTANT
 %token <s_val> IDENTIFIER
-%type <ast> start
-%type <prog_ast> program
-%type <rout_g_ast> routines
-%type <rout_ast> routine
-%type <dec_ast> parameters
-%type <dec_ast> declaration
-%type <var_g_ast> variable_list
-%type <var_ast> variable
-%type <s_val> type
-%type <state_g_ast> block
-%type <state_g_ast> statements
-%type <state_ast> statement
-%type <if_ast> if
-%type <state_ast> then
-%type <state_ast> else
-%type <do_ast> do
-%type <assign_ast> assignment
-%type <ref_ast> reference
-%type <var_ast> binding
-%type <exp_ast> rvalue
-%type <exp_ast> arguments
-%type <exp_ast> expression
-%type <exp_g_ast> expression_list
-%type <s_val> builtin
-%type <arith_ast> arithmetic
-%type <bool_ast> boolean
+%type  <ast>         start
+%type  <prog_ast>    program
+%type  <rout_g_ast>  routines
+%type  <rout_ast>    routine
+%type  <dec_ast>     parameters
+%type  <dec_ast>     declaration
+%type  <var_g_ast>   variable_list
+%type  <var_ast>     variable
+%type  <s_val>       type
+%type  <state_g_ast> block
+%type  <state_g_ast> statements
+%type  <state_ast>   statement
+%type  <if_ast>      if
+%type  <state_ast>   then
+%type  <state_ast>   else
+%type  <do_ast>      do
+%type  <assign_ast>  assignment
+%type  <ref_ast>     reference
+%type  <var_ast>     binding
+%type  <exp_ast>     rvalue
+%type  <exp_ast>     arguments
+%type  <exp_ast>     expression
+%type  <exp_g_ast>   expression_list
+%type  <s_val>       builtin
+%type  <arith_ast>   arithmetic
+%type  <bool_ast>    boolean
 
     // start variable
 %start start
