@@ -194,7 +194,7 @@ else
     ;
 
 do
-    : K_DO LPAREN variable SEMI expression SEMI expression RPAREN statement {}  { $$ = new Do_Statement($3, $5, $7, $9); }
+    : K_DO LPAREN variable SEMI expression SEMI expression RPAREN statement     { $$ = new Do_Statement($3, $5, $7, $9); }
     | K_DO K_WHILE LPAREN expression RPAREN statement                           { $$ = new Do_Statement(nullptr, $4, nullptr, $4); }
     | K_DO K_UNTIL LPAREN expression RPAREN statement                           { $$ = new Do_Statement(nullptr, $4, nullptr, $4); }
     ;
