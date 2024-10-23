@@ -35,8 +35,7 @@ public:
     Statement() = default;
     virtual ~Statement() = default;
 
-    virtual std::string toString() const override;;
-    virtual void print(std::ostream& os) const override;
+    virtual std::string toString() const override;
 };
 
 
@@ -47,8 +46,7 @@ public:
     Routine();
     virtual ~Routine();
 
-    virtual std::string toString() const override;;
-    virtual void print(std::ostream& os) const override;
+    virtual std::string toString() const override;
 };
 
 
@@ -59,8 +57,7 @@ public:
     Expression() = default;
     virtual ~Expression() = default;
 
-    virtual std::string toString() const override;;
-    virtual void print(std::ostream& os) const override;
+    virtual std::string toString() const override;
 };
 
 
@@ -71,8 +68,7 @@ public:
     Variable() = default;
     virtual ~Variable() = default;
 
-    virtual std::string toString() const override;;
-    virtual void print(std::ostream& os) const override;
+    virtual std::string toString() const override;
 };
 
 
@@ -83,8 +79,7 @@ public:
     Reference() = default;
     virtual ~Reference() = default;
 
-    virtual std::string toString() const override;;
-    virtual void print(std::ostream& os) const override;
+    virtual std::string toString() const override;
 };
 
 
@@ -99,8 +94,7 @@ public:
     StatementGroup(StatementGroup* statement_group,
                    Statement*      statement);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -115,8 +109,7 @@ public:
     RoutineGroup(RoutineGroup* routine_group,
                  Routine*      routine);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -131,8 +124,7 @@ public:
     ExpressionGroup(ExpressionGroup* expression_group,
                     Expression*      expression);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -147,8 +139,7 @@ public:
     VariableGroup(VariableGroup* variable_group,
                   Variable*      variable);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -162,8 +153,7 @@ public:
     Program(std::string*  name,
             RoutineGroup* routine_group);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -183,8 +173,7 @@ public:
              Declaration*    parameters,
              StatementGroup* block);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -202,8 +191,7 @@ public:
               Declaration*    parameters,
               StatementGroup* block);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -222,8 +210,7 @@ public:
                  Statement*  then_statement,
                  Statement*  else_statement);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -241,8 +228,7 @@ public:
                  Expression* update,
                  Statement*  block);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -256,8 +242,7 @@ public:
 
     Return(Expression* value);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -271,8 +256,7 @@ public:
     Declaration(std::string*   type,
                 VariableGroup* variable_group);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -288,8 +272,7 @@ public:
                Expression*  rvalue,
                std::string* operation);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -301,7 +284,6 @@ public:
     Atomic(std::string* name);
 
     std::string toString() const;
-    void print(std::ostream& os) const override;
 };
 
 
@@ -317,8 +299,7 @@ public:
     Array(std::string* name,
           Expression*  index);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -331,8 +312,7 @@ private:
 public:
     Constant(void* value);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -351,8 +331,7 @@ public:
                     Expression*   roperand,
                     std::string*  operation);
 
-    std::string toString() const override;;
-    void print(std::ostream& os) const override;
+    std::string toString() const override;
 };
 
 
@@ -372,7 +351,6 @@ public:
             std::string* operation);
 
     std::string toString() const override;
-    void print(std::ostream& os) const override;
 };
 
 

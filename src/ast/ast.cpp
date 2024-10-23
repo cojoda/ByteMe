@@ -16,6 +16,7 @@ void AST::print(std::ostream& os) const
     os << toString();
 }
 
+
 std::ostream& operator<<(std::ostream& os, const AST& ast)
 {
     ast.print(os);
@@ -33,10 +34,7 @@ std::string Statement::toString() const
     return *result;
 }
 
-void Statement::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -52,10 +50,7 @@ std::string Routine::toString() const
     return *result;
 }
 
-void Routine::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -68,10 +63,7 @@ std::string Expression::toString() const
     return *result;
 }
 
-void Expression::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -84,10 +76,7 @@ std::string Variable::toString() const
     return *result;
 }
 
-void Variable::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -99,10 +88,7 @@ std::string Reference::toString() const
     return std::string("Reference class output");
 }
 
-void Reference::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -135,10 +121,7 @@ std::string StatementGroup::toString() const
     return *result;
 }
 
-void StatementGroup::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -167,10 +150,7 @@ std::string RoutineGroup::toString() const
     return *result;
 }
 
-void RoutineGroup::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -204,10 +184,7 @@ std::string ExpressionGroup::toString() const
     return *result;
 }
 
-void ExpressionGroup::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -241,10 +218,7 @@ std::string VariableGroup::toString() const
     return *result;
 }
 
-void VariableGroup::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -261,10 +235,7 @@ std::string Program::toString() const
     return *result;
 }
 
-void Program::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -286,10 +257,7 @@ std::string Function::toString() const
     return *result;
 }
 
-void Function::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -309,10 +277,7 @@ std::string Procedure::toString() const
     return *result;
 }
 
-void Procedure::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -335,10 +300,7 @@ std::string If_Statement::toString() const
     return result;
 }
 
-void If_Statement::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -358,10 +320,7 @@ std::string Do_Statement::toString() const
     return std::string("Do_Statement class output");
 }
 
-void Do_Statement::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -376,10 +335,7 @@ std::string Return::toString() const
     return *result;
 }
 
-void Return::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -395,10 +351,7 @@ std::string Declaration::toString() const
     return std::string("Declaration Class output");
 }
 
-void Declaration::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -416,10 +369,7 @@ std::string Assignment::toString() const
     return *result;
 }
 
-void Assignment::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -433,10 +383,7 @@ std::string Atomic::toString() const
     return std::string("Atomic Class output");
 }
 
-void Atomic::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -453,10 +400,7 @@ std::string Array::toString() const
     return std::string("Array Class output");
 }
 
-void Array::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -471,10 +415,7 @@ std::string Constant::toString() const
     return *result;
 }
 
-void Constant::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -496,10 +437,7 @@ std::string Arithmetic::toString() const
     return *result;
 }
 
-void Arithmetic::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
 
@@ -507,7 +445,7 @@ void Arithmetic::print(std::ostream& os) const
 
 Boolean::Boolean(Expression*  operand,
                  std::string* operation) : roperand(operand),
-                                           peration(operation) {};
+                                           operation(operation) {};
 
 Boolean::Boolean(Expression*  loperand,
                  Expression*  roperand,
@@ -521,9 +459,6 @@ std::string Boolean::toString() const
     return *result;
 }
 
-void Boolean::print(std::ostream& os) const
-{
-    os << toString();
-}
+
 
 
