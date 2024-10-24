@@ -70,6 +70,9 @@ public:
     Variable() = default;
     virtual ~Variable() = default;
 
+    std::string* type;
+    std::string* name;
+    
     virtual std::string toString() const override;
 };
 
