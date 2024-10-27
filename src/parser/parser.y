@@ -1,20 +1,12 @@
 %{
     #include <iostream>
     #include <string>
-    class AST;  // Forward declaration of AST
+
     #include "src/parser/ast.hpp"
 
     int  yparse();
     int  yylex(void);
     void yyerror(const char *s);
-
-    #define RESET   std::string("\033[0m")
-    #define RED     std::string("\033[31m")
-    #define GREEN   std::string("\033[32m")
-    #define YELLOW  std::string("\033[33m")
-    #define BLUE    std::string("\033[34m")
-    #define MAGENTA std::string("\033[35m")
-    #define CYAN    std::string("\033[36m")
 %}
 
 %union
@@ -23,9 +15,6 @@
     double       d_val;
     std::string* s_val;
     AST*         ast;
-    Program*     program_node;
-    /* Routines*    routines_node;
-    Routine*     routine_node; */
 }
     // type keywords
 %token    K_INTEGER K_DOUBLE K_STRING
@@ -74,18 +63,14 @@
     // terms
 %token <i_val> ICONSTANT
 %token <d_val> DCONSTANT
-%token <s_val> SCONSTANT
-%token <s_val> IDENTIFIER
-/* %type <ast> start */
-%type <s_val> program
-%type <s_val> routine_block
-%type <s_val> routine
-%type <s_val> type function_call expression_block scope
-%type <s_val> if then else do
-%type <s_val> reference constant start single_declaration multi_declaration declaration_block statement parameter_block statement_block
-%type <s_val> expression arithmetic assignment builtin boolean
-
-%token UNKNOWN
+%token <s_val> SCONSTANT IDENTIFIER
+%type <s_val> start program
+%type <s_val> routine_block routine parameter_block
+%type <s_val> scope statement_block statement
+%type <s_val> if then else do assignment
+%type <s_val> declaration_block single_declaration multi_declaration
+%type <s_val> expression_block expression arithmetic boolean function_call builtin
+%type <s_val> reference constant type  
 
     // start variable
 %start start
@@ -113,6 +98,7 @@ routine
 
 parameter_block
     : "(" declaration_block ")"                                     { }
+    | "(" ")"                                                       {}
     ;
 
 scope
@@ -130,11 +116,9 @@ statement_block
 
 statement
     : declaration_block                                              { }
-    | assignment                                                    { }
     | expression                                                    { }
     | K_RETURN                                                      { }
     | K_RETURN expression                                            { }
-    | K_RETURN assignment                                            { }
     | %empty                                                        { }
     ;
 
@@ -143,6 +127,7 @@ statement
 
 control_scope
     : statement ";" {}
+    | statement if {}
     | scope {}
     
 
@@ -179,8 +164,10 @@ multi_declaration
 
 single_declaration
     : reference                                                 { }
-    | reference ":=" constant                                   { }
+    | reference ":=" expression {}
     ;
+
+
 
 reference
     : IDENTIFIER                                                { }
@@ -210,6 +197,7 @@ expression
     | reference                                                 { }
     | constant                                                  { }
     | "(" expression ")"                                        { }
+    | assignment {}
     ;
 
 
