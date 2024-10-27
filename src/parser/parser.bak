@@ -1,0 +1,288 @@
+%{
+    #include <iostream>
+    #include <string>
+    class AST;  // Forward declaration of AST
+    #include "src/parser/ast.hpp"
+
+    int  yparse();
+    int  yylex(void);
+    void yyerror(const char *s);
+%}
+
+%union
+{
+    int          i_val;
+    double       d_val;
+    std::string* s_val;
+    AST*         ast;
+    Program*     program_node;
+    /* Routines*    routines_node;
+    Routine*     routine_node; */
+}
+
+    // type keywords
+%token K_INTEGER K_DOUBLE K_STRING
+
+    // function keywords
+%token K_PROCEDURE K_PROGRAM K_FUNCTION
+%token K_READ_INTEGER K_READ_DOUBLE K_READ_STRING
+%token K_PRINT_INTEGER K_PRINT_DOUBLE K_PRINT_STRING
+
+
+    // statement keywords
+%token K_DO K_WHILE K_UNTIL
+
+%token K_IF K_THEN
+%nonassoc LOWER_THAN_ELSE
+%nonassoc K_ELSE
+
+%token K_RETURN K_EXIT
+
+    // operators (using C precedence & associavity)
+%left  COMMA
+%right ASSIGN ASSIGN_PLUS ASSIGN_MINUS ASSIGN_MULTIPLY ASSIGN_DIVIDE ASSIGN_MOD
+%left  DOR
+%left  DAND
+%left  DEQ NE
+%left  LT LEQ GT GEQ
+%left  PLUS MINUS
+%left  MULTIPLY DIVIDE MOD
+%right POW
+%right NOT
+%left  PERIOD
+%left  LBRACKET RBRACKET
+%left  LPAREN RPAREN
+%left  INCREMENT DECREMENT
+
+    // punctuation
+%token SEMI LCURLY RCURLY
+
+    // terms
+%token <i_val> ICONSTANT
+%token <d_val> DCONSTANT
+%token <s_val> SCONSTANT
+%token <s_val> IDENTIFIER
+%type <ast> start
+%type <s_val> program
+%type <s_val> routines
+%type <s_val> routine
+%type <s_val> parameters
+%type <s_val> declaration
+%type <s_val> variable_list
+%type <s_val> variable
+%type <s_val> type
+%type <s_val> block
+%type <s_val> statements
+%type <s_val> statement
+%type <s_val> if
+%type <s_val> then
+%type <s_val> else
+%type <s_val> do
+%type <s_val> for
+%type <s_val> assignment
+%type <s_val> lvalue
+%type <s_val> rvalue
+%type <s_val> arguments
+%type <s_val> expression
+%type <s_val> expression_list
+%type <s_val> builtin
+%type <s_val> arithmetic
+%type <s_val> boolean
+
+%token UNKNOWN
+
+    // start variable
+%start start
+
+%%
+
+start
+    : program                                                   { std::cout << *$1; }
+    ;
+
+program
+    : K_PROGRAM IDENTIFIER LCURLY routines RCURLY               {  }
+    ;
+
+
+    // functions
+
+routines
+    : routines routine                                          {  }
+    | %empty                                                    {  }
+    ;
+
+routine
+    : K_FUNCTION type IDENTIFIER LPAREN parameters RPAREN block {  }
+    | K_PROCEDURE IDENTIFIER LPAREN parameters RPAREN block     {  }
+    ;
+
+parameters
+    : declaration                                               {  }
+    | %empty                                                    {  }
+    ;
+
+arguments
+    : expression_list                                           {  }
+    | %empty                                                    {  }
+    ;
+
+
+    // statements
+
+block
+    : LCURLY statements RCURLY                                  {  }
+    ;
+
+statements
+    : statements statement                                      {  }
+    | %empty                                                    {  }
+    ;
+
+statement
+    : block                                                     {  }
+    | if                                                        {  }
+    | do                                                        {  }
+    | expression SEMI                                           {  }
+    | declaration SEMI                                          {  }
+    | assignment SEMI                                           {  }
+    | routine                                                   {  }
+    | K_RETURN SEMI                                             {  }
+    | K_RETURN expression SEMI                                  {  }
+    | K_RETURN assignment SEMI                                  {  }
+    | SEMI                                                      {  }
+    ;
+
+
+    // control statements
+
+if
+    : K_IF LPAREN expression RPAREN then %prec LOWER_THAN_ELSE  {  }
+    | K_IF LPAREN expression RPAREN then else                   {  }
+    ;
+
+then
+    : K_THEN statement                                          {  }
+    ;
+
+else
+    : K_ELSE statement                                          {  }
+    ;
+
+do
+    : for {  }
+    | K_DO K_WHILE LPAREN expression RPAREN statement           {  }
+    | K_DO K_UNTIL LPAREN expression RPAREN statement           {  }
+    ;
+
+for
+    : K_DO LPAREN variable SEMI expression SEMI expression RPAREN statement
+                                                                {  }
+    ;
+
+
+    // variables
+
+declaration
+    : type variable_list                                        {  }
+    ;
+
+variable_list
+    : variable                                                  {  }
+    | variable_list COMMA variable                              {  }
+    ;
+
+variable
+    : IDENTIFIER LBRACKET RBRACKET                              {  }
+    | IDENTIFIER LBRACKET expression RBRACKET                   {  }
+    | declaration                                               {}
+    | assignment                                                {  }
+    | IDENTIFIER                                                {  }
+    ;
+
+assignment
+    : lvalue ASSIGN rvalue                                      {  }
+    | lvalue ASSIGN_PLUS rvalue                                 {  }
+    | lvalue ASSIGN_MINUS rvalue                                {  }
+    | lvalue ASSIGN_MULTIPLY rvalue                             {  }
+    | lvalue ASSIGN_DIVIDE rvalue                               {  }
+    | lvalue ASSIGN_MOD rvalue                                  {  }
+    ;
+
+lvalue
+    : IDENTIFIER                                                {  }
+    | IDENTIFIER LBRACKET expression RBRACKET                   {  }
+    | IDENTIFIER LBRACKET RBRACKET                              {  }
+    ;
+
+rvalue
+    : expression                                                {  }
+    | assignment                                                {  }
+    ;
+
+type
+    : K_INTEGER                                                 {  }
+    | K_DOUBLE                                                  {  }
+    | K_STRING                                                  {  }
+    ;
+
+
+    // expressions
+
+expression
+    : arithmetic {}                                             {  }
+    | boolean {}                                                {  }
+    | builtin LPAREN arguments RPAREN {}                        {  }
+    | LPAREN expression RPAREN {}                               {  }
+    | IDENTIFIER LPAREN arguments RPAREN {}                     {  }
+    | IDENTIFIER LBRACKET expression RBRACKET                   {  }
+    | ICONSTANT                                                 {  }
+    | DCONSTANT                                                 {  }
+    | SCONSTANT                                                 {  }
+    | IDENTIFIER                                                {  }
+    ;
+
+expression_list
+    : expression                                                {  }
+    | expression_list COMMA expression                          {  }
+    ;
+
+builtin
+    : K_PRINT_INTEGER                                           {  }
+    | K_PRINT_DOUBLE                                            {  }
+    | K_PRINT_STRING                                            {  }
+    | K_READ_INTEGER                                            {  }
+    | K_READ_DOUBLE                                             {  }
+    | K_READ_STRING                                             {  }
+    ;
+
+arithmetic
+    : expression PLUS expression                                {  }
+    | expression MINUS expression                               {  }
+    | expression MULTIPLY expression                            {  }
+    | expression DIVIDE expression                              {  }
+    | expression MOD expression                                 {  }
+    | expression POW expression                                 {  }
+    | expression INCREMENT                                      {  }
+    | expression DECREMENT                                      {  }
+    | MINUS expression                                          {  }
+    ;
+
+boolean
+    : expression GT expression                                  {  }
+    | expression GEQ expression                                 {  }
+    | expression LT expression                                  {  }
+    | expression LEQ expression                                 {  }
+    | expression DEQ expression                                 {  }
+    | expression NE expression                                  {  }
+    | expression DAND expression                                {  }
+    | expression DOR expression                                 {  }
+    | NOT expression                                            {  }
+    ;
+
+%%
+
+void yyerror(const char* s)
+{
+    std::cerr << "Error: " << s << std::endl;
+}
