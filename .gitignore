@@ -7,9 +7,10 @@ test
 # files
 lexer.cpp
 args.cpp
-examples/mg.f24
+mg.f24
 src/lexer/lexer.cpp
 src/parser/parser.hpp
 src/parser/parser.cpp
 test/*
 src/parser/parser.output
+
