@@ -102,11 +102,17 @@ parameter_block
     ;
 
 scope
-    : "{" statement_block "}"                                       { }
+    : "{" scope_state "}"                                       { }
+    ;
+
+scope_state
+    : scope_state statement_block {}
+    | %empty
+    ;
 
 statement_block
-    : statement_block statement ";"                                 { }
-    | statement ";"                                                 { }
+    : statement ";"                                                 { }
+    | ";"                                                           { }
     | if                                                            { }
     | do                                                            { }
     | scope                                                         { }
@@ -145,9 +151,19 @@ else
     ;
 
 do
-    : K_DO "(" declaration_block ";" expression ";" expression ")" control_scope    { }
+    : K_DO "(" do_init ";" do_express ";" do_express ")" control_scope    { }
     | K_DO K_WHILE "(" expression ")" control_scope                                 { }
     | K_DO K_UNTIL "(" expression ")" control_scope                                 { }
+    ;
+
+do_init
+    : declaration_block
+    | multi_declaration
+    | %empty
+    ;
+do_express
+    : expression
+    | %empty
     ;
 
 
