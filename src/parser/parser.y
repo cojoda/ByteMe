@@ -78,68 +78,73 @@
 %%
 
 start
-    : program                                                               { }
+    : program                                                           { }
     ;
 
 
 program
-    : K_PROGRAM IDENTIFIER "{" routine_block "}"                            { }
+    : K_PROGRAM IDENTIFIER "{" routine_block "}"                        { }
     ;
+
 
 routine_block
-    : routine_block routine                                                 { }
-    | %empty                                                                { }
+    : routine_block routine                                             { }
+    | %empty                                                            { }
     ;
+
 
 routine
-    : K_PROCEDURE IDENTIFIER parameter_block scope                          { /* std::cerr << "<procedure:" << *$2 << "(){}>"; */ }
-    | K_FUNCTION type IDENTIFIER parameter_block scope                      { /* std::cerr << "<function:" << *$2 << ":" << *$3 << "(){}>";   */}
+    : K_PROCEDURE IDENTIFIER parameter_block scope                      { /* std::cerr << "<procedure:" << *$2 << "(){}>"; */ }
+    | K_FUNCTION type IDENTIFIER parameter_block scope                  { /* std::cerr << "<function:" << *$2 << ":" << *$3 << "(){}>";   */}
     ;
+
 
 parameter_block
-    : "(" declaration_block ")"                                     { }
-    | "(" ")"                                                       {}
+    : "(" declaration_block ")"                                         { }
+    | "(" ")"                                                           { }
     ;
+
 
 scope
-    : "{" scope_state "}"                                       { }
+    : "{" scope_state "}"                                               { }
     ;
+
 
 scope_state
-    : scope_state statement_block {}
-    | %empty
+    : scope_state statement_block                                       { }
+    | %empty                                                            { }
     ;
 
+
 statement_block
-    : statement ";"                                                 { }
-    | ";"                                                           { }
-    | if                                                            { }
-    | do                                                            { }
-    | scope                                                         { }
-    | routine                                                       { }
+    : statement ";"                                                     { }
+    | if                                                                { }
+    | do                                                                { }
+    | scope                                                             { }
+    | routine                                                           { }
     ;
 
 
 statement
-    : declaration_block                                              { }
-    | expression                                                    { }
-    | K_RETURN                                                      { }
-    | K_RETURN expression                                            { }
-    | %empty                                                        { }
+    : declaration_block                                                 { }
+    | expression                                                        { }
+    | K_RETURN                                                          { }
+    | K_RETURN expression                                               { }
+    | %empty                                                            { }
     ;
 
 
     // control statements
 
 control_scope
-    : statement ";" {}
-    | statement if {}
-    | scope {}
-    
+    : statement ";"                                                     { }
+    | statement if                                                      { }
+    | scope                                                             { }
+
 
 if
-    : K_IF "(" expression ")" then %prec LOWER_THAN_ELSE            { }
-    | K_IF "(" expression ")" then else                             { }
+    : K_IF "(" expression ")" then %prec LOWER_THAN_ELSE                { }
+    | K_IF "(" expression ")" then else                                 { }
     ;
 
 then
@@ -151,74 +156,74 @@ else
     ;
 
 do
-    : K_DO "(" do_init ";" do_express ";" do_express ")" control_scope    { }
-    | K_DO K_WHILE "(" expression ")" control_scope                                 { }
-    | K_DO K_UNTIL "(" expression ")" control_scope                                 { }
+    : K_DO "(" do_init ";" do_express ";" do_express ")" control_scope  { }
+    | K_DO K_WHILE "(" expression ")" control_scope                     { }
+    | K_DO K_UNTIL "(" expression ")" control_scope                     { }
     ;
 
 do_init
-    : declaration_block
-    | multi_declaration
-    | %empty
+    : declaration_block                                                 { }
+    | multi_declaration                                                 { }
+    | %empty                                                            { }
     ;
 do_express
-    : expression
-    | %empty
+    : expression                                                        { }
+    | %empty                                                            { }
     ;
 
 
 declaration_block
-    : type multi_declaration  "," declaration_block               { /* std::cerr << "<" << *$1 << ":" << *$2 << ">";  */}
-    | type multi_declaration                                      { /* std::cerr << "<" << *$1 << ":" << *$2 << ">"; */ }
+    : type multi_declaration  "," declaration_block                     { /* std::cerr << "<" << *$1 << ":" << *$2 << ">";  */}
+    | type multi_declaration                                            { /* std::cerr << "<" << *$1 << ":" << *$2 << ">"; */ }
     ;
 
 
 multi_declaration
-    : multi_declaration "," single_declaration                  { }
-    | single_declaration                                        { }
+    : multi_declaration "," single_declaration                          { }
+    | single_declaration                                                { }
     ;
 
 single_declaration
-    : reference                                                 { }
-    | reference ":=" expression {}
+    : reference                                                         { }
+    | reference ":=" expression                                         { }
     ;
 
 
 
 reference
-    : IDENTIFIER                                                { }
-    | IDENTIFIER "[" "]"                                        { }
-    | IDENTIFIER "[" expression "]"                             { }
+    : IDENTIFIER                                                        { }
+    | IDENTIFIER "[" "]"                                                { }
+    | IDENTIFIER "[" expression "]"                                     { }
     ;
 
 
 constant
-    : ICONSTANT                                                 { }
-    | DCONSTANT                                                 { }
-    | SCONSTANT                                                 { }
+    : ICONSTANT                                                         { }
+    | DCONSTANT                                                         { }
+    | SCONSTANT                                                         { }
     ;
 
 type
-    : K_INTEGER                                                 { }
-    | K_DOUBLE                                                  { }
-    | K_STRING                                                  { }
+    : K_INTEGER                                                         { }
+    | K_DOUBLE                                                          { }
+    | K_STRING                                                          { }
     ;
 
 
 
 expression
-    : arithmetic                                                { }
-    | boolean                                               { }
-    | function_call                                             { }
-    | reference                                                 { }
-    | constant                                                  { }
-    | "(" expression ")"                                        { }
-    | assignment {}
+    : arithmetic                                                        { }
+    | boolean                                                           { }        
+    | function_call                                                     { }
+    | reference                                                         { }
+    | constant                                                          { }
+    | "(" expression ")"                                                { }
+    | assignment                                                        { }
     ;
 
 
 assignment
-    : reference ":=" expression                                 { /* std::cerr << "<" << *$1 << "+=" << *$3 << ">" ; */ }
+    : reference ":=" expression                                         { /* std::cerr << "<" << *$1 << "+=" << *$3 << ">" ; */ }
     | reference "+=" expression                                         {  }
     | reference "-=" expression                                         {  }
     | reference "*=" expression                                         {  }
@@ -227,50 +232,49 @@ assignment
     ; 
 
 arithmetic
-    : expression "+" expression                                 { /*std::cerr << "<" + *$1 + "+" + *$3 + ">";  */ }
-    | expression "-" expression                                     { }
-    | expression "*" expression                                     { }
-    | expression "/" expression                                     { }
-    | expression "%" expression                                     { }
-    | expression "^" expression                                     { }
-    | expression "++"                                               { }
-    | expression "--"                                               { }
-    | MINUS expression                                              { }
+    : expression "+" expression                                         { /*std::cerr << "<" + *$1 + "+" + *$3 + ">";  */ }
+    | expression "-" expression                                         { }
+    | expression "*" expression                                         { }
+    | expression "/" expression                                         { }
+    | expression "%" expression                                         { }
+    | expression "^" expression                                         { }
+    | expression "++"                                                   { }
+    | expression "--"                                                   { }
+    | MINUS expression                                                  { }
     ;
 
 
 boolean
-    : expression ">" expression                                     { }
-    | expression ">=" expression                                    { }
-    | expression "<" expression                                     { }
-    | expression "<=" expression                                    { }
-    | expression "==" expression                                    { }
-    | expression "!=" expression                                    { }
-    | expression "&&" expression                                    { }
-    | expression "||" expression                                    { }
-    | "!" expression                                                { }
+    : expression ">" expression                                         { }
+    | expression ">=" expression                                        { }
+    | expression "<" expression                                         { }
+    | expression "<=" expression                                        { }
+    | expression "==" expression                                        { }
+    | expression "!=" expression                                        { }
+    | expression "&&" expression                                        { }
+    | expression "||" expression                                        { }
+    | "!" expression                                                    { }
     ;
 
 
 function_call
-    : IDENTIFIER "(" expression_block ")"                       { }
-    | builtin "(" expression_block ")"                          { }
+    : IDENTIFIER "(" expression_block ")"                               { }
+    | builtin "(" expression_block ")"                                  { }
     ;
 
 expression_block
-    : expression_block "," expression                           { }
-    | expression                                                { }
+    : expression_block "," expression                                   { }
+    | expression                                                        { }
     ;
 
 
 builtin
-    : K_PRINT_INTEGER                                               { }
-    | K_PRINT_DOUBLE                                                { /* $$ = new std::string("(procedure:print_double"); */ }
-    | K_PRINT_STRING                                                { /* $$ = new std::string("(procedure:print_string"); */ }
-    | K_READ_INTEGER                                                { /* $$ = new std::string("(procedure:read_integer"); */ }
-    | K_READ_DOUBLE                                                 { /* $$ = new std::string("(procedure:read_double"); */ }
-    | K_READ_STRING                                                 { /* $$ = new std::string("(procedure:read_string"); */ }
-    ;
+    : K_PRINT_INTEGER                                                   { }
+    | K_PRINT_DOUBLE                                                    { /* $$ = new std::string("(procedure:print_double"); */ }
+    | K_PRINT_STRING                                                    { /* $$ = new std::string("(procedure:print_string"); */ }
+    | K_READ_INTEGER                                                    { /* $$ = new std::string("(procedure:read_integer"); */ }
+    | K_READ_DOUBLE                                                     { /* $$ = new std::string("(procedure:read_double"); */ }
+    | K_READ_STRING                                                     { /* $$ = new std::string("(procedure:read_string"); */ }
     ;
 
 
