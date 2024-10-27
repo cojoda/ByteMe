@@ -52,7 +52,7 @@ src/lexer/lexer.cpp: src/lexer/lexer.l
 	$(FLEX) -o src/lexer/lexer.cpp src/lexer/lexer.l
 
 src/parser/parser.cpp src/parser/parser.hpp: src/parser/parser.y
-	$(BISON) -d src/parser/parser.y -o src/parser/parser.cpp
+	$(BISON) -v -Dparse.trace -d src/parser/parser.y -o src/parser/parser.cpp
 
 
 
@@ -61,13 +61,31 @@ src/parser/parser.cpp src/parser/parser.hpp: src/parser/parser.y
 clean:
 	rm -f src/lexer/lexer.cpp
 	rm -f src/parser/parser.cpp src/parser/parser.hpp src/parser/stack.hh
-	rm -f src/lexer/prelexer.cpp src/parser/preparser.cpp
+	rm -f src/lexer/prelexer.cpp src/parser/preparser.cpp src/parser/parser.output
 	rm -rf obj bin
 	clear && clear
 	
 
-test: clean bin/byte
+test-mg: clean bin/byte
 	bin/byte < examples/mg.f24
+
+# Test parser grammar for conflicts & test against all functions/procedures in mg.f24
+GRAMMAR_TESTS := $(wildcard tests/grammar/*.f24)
+grammar: $(GRAMMAR_TESTS)
+	@echo $(shell make -s clean)
+	@echo $(shell make -s)
+	clear && clear
+	@/opt/homebrew/opt/bison/bin/bison -d src/parser/parser.y -o src/parser/parser.cpp \
+    2>&1 | tee /tmp/bison_output.txt | grep -iE 'shift/reduce|reduce/reduce' \
+    | sed -nE 's/.*(warning: [0-9]+ (shift|reduce)\/reduce conflict[s]?).*/\1/p'; \
+    if [ ! -s /tmp/bison_output.txt ]; then echo "No shift/reduce or reduce/reduce conflicts found."; fi
+	@for testfile in $(GRAMMAR_TESTS); do \
+		echo "Running $$testfile" && bin/byte < $$testfile || exit 1; \
+	done
+	@echo "Running tests/grammar/mg.f24" && bin/byte < tests/grammar/mg.f24 
+	@echo "All tests passed!"
+	
+
 
 
 prelexer: obj src/lexer/lexer.cpp src/parser/parser.hpp src/lexer/token.hpp

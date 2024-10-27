@@ -1,0 +1,23 @@
+program test
+{
+    procedure
+         print_vector(
+            string  title,                  // Identification of vector
+            double  dsoln[], integer s1     // Approximate solution
+                     )
+    {
+        integer i;
+
+        print_string( "Vector: " );
+        print_string( "title" );
+        print_string( "\ni  value\n" );
+        do ( integer i := 0; i <= s1; i++ )
+        {
+            print_integer( i );
+            print_string( " " );
+            print_double( dsoln[i] );
+        }   
+        print_string( "--- End of vector\n" );
+
+    }   // of print_vector
+}

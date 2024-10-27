@@ -1,0 +1,83 @@
+program test
+{
+
+    function
+    integer main( 
+            )
+    {
+        integer rval := 0;      // Return value
+        integer fm1:=1, cm1;    // Fine and coarse mesh upper limits
+        double  enorm;          // Error norm
+
+        // Determine fine mesh size.  Coarse mesh is roughly half the size.
+        do while( fm1 <= 4 || fm1 % 2 != 0 )
+        {
+            print_string( "Number of points in the fine mesh (must be even and atleast 6) " );
+            read_integer( fm1 );
+        }   
+        cm1 := fm1 / 2;
+        print_string( "Fine   mesh points 0:" );
+        print_integer( fm1 );
+        print_string( "\nCoarse mesh points 0:" );
+        print_integer( cm1 );
+        print_string( "\n" );
+
+        // Allocate space dynamically
+        double fm[fm1+1],       // Fine grid approximate solution
+               frhs[fm1+1],     // Fine grid right hand side
+               fres[fm1+1];     // Fine grid residuals
+        double cm[cm1+1], crhs[cm1+1];  // Coarse grid solution and right
+                                        // hand side
+
+        // Set the initial guess to the solution
+        set_constant( 1.0d0, fm, fm1 );
+        fm[0] := 0.0d0;
+        fm[fm1] := 0.;
+        print_vector( "Initial guess", fm, fm1 );
+
+        // Get the initial error norm
+        enorm := error_norm( fm, fm1 );
+        print_string( "initial error norm := " );
+        print_double( enorm );
+        print_string( "\n" );
+
+        // Do some Gauss-Seidel iterations on the fine mesh
+        enorm := gauss_seidel( 4, fm, fm1, frhs, fm1 );
+        print_vector( "after first fine mesh smoothing", fm, fm1 );
+        print_string( "Fine mesh error norm := " );
+        print_double( enorm );
+        print_string( "\n" );
+
+        // Compute the residuals on the fine mesh and project them onto the
+        // coarse mesh right hand side.
+        residuals( fm, fm1, frhs, fm1, fres, fm1 );
+        print_vector( "Residuals on fine mesh", fres, fm1 );
+        if ( interpolate( fres, fm1, crhs, cm1 ) != 0 ) then
+            return rval := 1;
+
+        // Do some Gauss-Seidel iterations on the coarse mesh
+        enorm := gauss_seidel( 500, cm, cm1, crhs, cm1 );
+        print_vector( "coarse mesh correction", cm, cm1 );
+
+        // Interpolate the correction to the fine grid
+        if ( interpolate( cm, cm1, fm, fm1 ) > 0 ) then
+            return 2;
+        enorm := error_norm( fm, fm1 );
+        print_string( "Fine mesh error norm := " );
+        print_double( enorm );
+        print_string( "\n" );
+        print_vector( "after interpolation to fine mesh", fm, fm1 );
+
+        // Do some Gauss-Seidel iterations on the fine mesh
+        enorm := gauss_seidel( 4, fm, fm1, frhs, fm1 );
+        print_vector( "after second fine mesh smoothing", fm, fm1 );
+        print_string( "Fine mesh error norm := " );
+        print_double( enorm );
+        print_string( "\n" );
+
+        // All done.  Return 0 if everything worked out or something else if
+        // something went wrong.
+        return rval;
+
+    }   // of main
+}

@@ -1,0 +1,7 @@
+program test
+{
+    procedure empty_params()
+    {
+        integer x;
+    }
+}

@@ -1,0 +1,31 @@
+program test
+{
+    function
+    double error_norm(
+            double  dsoln[], integer s1         // Approximate solution
+                     )
+    {
+        integer i := 0;                 // Loop variable
+        double  asoln;                  // abs(dsoln[i])
+        double  l0_norm := 0.0d0;       // Little L1 norm
+
+        // The real solution is uniformly 0, so the maximum error is the
+        // absolute value of the approximate solution
+
+        do until ( i > s1 )
+        {
+            if ( dsoln[i] <= 0. ) then
+                asoln := -dsoln[i];
+            else
+                asoln := dsoln[i];
+            if ( asoln > l0_norm ) then
+            {
+                l0_norm := asoln;
+            }   
+            i++;
+        }   
+
+        return l0_norm;
+
+    }   // of error_norm
+}

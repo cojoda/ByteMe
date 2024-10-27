@@ -1,0 +1,20 @@
+program test
+{
+    procedure
+         residuals(
+            double  dsoln[], integer s1,        // Approximate solution
+            double  drhs[], integer rhs1,       // Right hand side
+            double  dres[], integer res1        // Residuals
+                   )
+    {
+        integer i;                      // Loop variable
+
+        // Compute the residuals
+        dres[0] := dres[res1] := 0.0d0;
+        do ( i := 1; i < s1; i++ )
+            dres[i] := drhs[i] - 2.0 * dsoln[i] 
+                              + dsoln[i-1] 
+                              + dsoln[i+1];
+
+    }   // of residuals
+}

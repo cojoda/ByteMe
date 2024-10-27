@@ -1,0 +1,25 @@
+program test
+{
+    function
+    double gauss_seidel(
+            integer iters,                      // Number of iterations
+            double  dsoln[], integer s1,        // Approximate solution
+            double  drhs[], integer rhs1        // Right hand side
+                     )
+    {
+        integer i, n:=1;                        // Loop variables
+
+        // Do iters number of Gauss-Seidel iterations 
+        do until ( n > iters )
+        {
+            do ( i := 1; i < s1; i++ )
+                dsoln[i] := ( drhs[i] + dsoln[i-1] 
+                                     + dsoln[i+1]) / 2.0d0;
+            n++;
+        }   
+
+        // Return the error norm
+        return error_norm( dsoln, s1 );
+
+    }   // of gauss_seidel
+}

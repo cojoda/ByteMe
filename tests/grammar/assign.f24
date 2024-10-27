@@ -1,0 +1,8 @@
+program test
+{
+    procedure assign(integer x)
+    {
+        x := y := z;
+        integer x := y := 3;
+    }
+}

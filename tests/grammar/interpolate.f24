@@ -1,0 +1,92 @@
+program test
+{
+
+    function
+    integer interpolate( 
+            double dfrom[], integer f1,         // Original data, sized (f1)  
+            double dto[],   integer t1          // Target date, sized  (t1)   
+                   )
+    {
+
+        // Two procedures defined only inside of interpolate
+
+        // --------------------------------------------------------------------
+        // Interpolate from the finer mesh to the coarser mesh.
+        // --------------------------------------------------------------------
+
+        procedure
+             coarsen( 
+                double dfrom[], integer f1,     // Original data, sized (f1)  
+                double dto[],   integer t1      // Target date, sized  (t1)   
+                   )
+        {
+            integer i, m;       // Loop variables   
+
+            // Aggregate the from data in a Galerkin style on the coarser mesh  
+            dto[0] := dto[t1] := 0.;
+            m := 0;
+            do ( i := 1 ; i < t1 ; i++ )
+            {
+                m += 2;
+                dto[i] := dfrom[m] +
+                        5.d-1 * ( dfrom[m-1] + dfrom[m+1] );
+            }   
+
+        }   // of coarsen
+
+
+        // --------------------------------------------------------------------
+        // Interpolate from the coarser mesh to the finer mesh and add to an
+        // already existing approximate solution.
+        // --------------------------------------------------------------------
+
+        procedure
+             refine_add(
+                double dfrom[], integer f1,     // Original data, sized (f1)  
+                double dto[],   integer t1      // Target date, sized  (t1)   
+                   )
+        {
+            integer i, m;       // Loop variables   
+
+            // Deal with mesh points coincident between the two meshes  
+            m := 0;
+            do ( i := 1; i < f1 ; i++ )
+            {
+                m := m + 2;
+                dto[m] := dto[m] + dfrom[i];
+            }   
+
+            // Deal with mesh points noncoincident between the two meshes  
+            m := -1;
+            do ( i := 0; i < f1; i++ )
+            {
+                m := m + 2;
+                dto[m] := dto[m] + 
+                         .5 * ( dfrom[i] + dfrom[i+1] );
+            }   
+
+        }   // of refine_add
+
+
+        // interpolate's code really starts here
+
+        // Interpolate to a coarser mesh    
+        if ( t1 == f1 / 2 ) then
+            coarsen( dfrom, f1, dto, t1 );
+
+        // Interpolate and add to what is on a finer mesh   
+        else if ( t1 == f1 * 2 ) then
+        {
+            refine_add( dfrom, f1, dto, t1 );
+        }   
+
+        // Uh, oh... this is incompatible   
+        else
+        {
+            print_string( "Error in routine interp: data size mismatch.\n" );
+            return 0;
+        }   
+        return 1;
+
+    }   // of interpolate
+}

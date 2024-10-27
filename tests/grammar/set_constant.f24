@@ -1,0 +1,15 @@
+program test
+{
+    procedure
+         set_constant(
+            double  dval,                   // The constant value
+            double  dsoln[], integer s1     // Approximate solution
+                     )
+    {
+        integer i := 0;                     // Loop variable
+
+        do while ( i >= 0 && i <= s1 )
+            dsoln[i++] := dval;
+
+    }   // of set_constant
+}

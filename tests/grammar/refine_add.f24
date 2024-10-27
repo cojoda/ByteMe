@@ -1,0 +1,29 @@
+program test
+{
+    procedure
+             refine_add(
+                double dfrom[], integer f1,     // Original data, sized (f1)  
+                double dto[],   integer t1      // Target date, sized  (t1)   
+                   )
+        {
+            integer i, m;       // Loop variables   
+
+            // Deal with mesh points coincident between the two meshes  
+            m := 0;
+            do ( i := 1; i < f1 ; i++ )
+            {
+                m := m + 2;
+                dto[m] := dto[m] + dfrom[i];
+            }   
+
+            // Deal with mesh points noncoincident between the two meshes  
+            m := -1;
+            do ( i := 0; i < f1; i++ )
+            {
+                m := m + 2;
+                dto[m] := dto[m] + 
+                         .5 * ( dfrom[i] + dfrom[i+1] );
+            }   
+
+        }   // of refine_add
+}
