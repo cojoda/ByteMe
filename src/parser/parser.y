@@ -14,13 +14,13 @@
     int           i_val;
     double        d_val;
     std::string*  s_val;
-    AST*                           ast;
+    Node*                          node_ast;
     Program*                       program_ast;
     Routine*                       routine_ast;
-    Block<Routine*,    AST>*       routine_block;
-    Block<Expression*, AST>*       expression_block_ast;
+    Block<Routine*,    Node>*       routine_block;
+    Block<Expression*, Node>*       expression_block_ast;
     Block<UniDec*,     Statement>* unidec_block_ast;
-    Block<Declaration*,Statement>* dec_ast;
+    Block<Declaration*,Statement>* polytypedec_ast;
     Block<Statement*,  Statement>* state_block;
     Expression*                    expression_ast;
     Reference*                     reference_ast;
@@ -53,7 +53,7 @@
 
     // operators (using C precedence & associavity)
 %left  ","
-%left ":=" "+=" "-=" "*=" "/=" "%="
+%left  ":=" "+=" "-=" "*=" "/=" "%="
 %left  "||"
 %left  "&&"
 %left  "==" "!="
@@ -78,9 +78,10 @@
 %type  <s_val> start
 %type  <s_val> type builtin
 
-%type <dec_ast> polytype_declaration parameter_list
-%type <unidec_block_ast> poly_declaration
+%type <polytypedec_ast> polytype_declaration parameter_list
+%type <unidec_block_ast> uni_declaration_list
 %type <unidec_ast> uni_declaration
+%type <reference_ast> reference
 
 %type <program_ast> program
 %type <routine_block> routine_list
@@ -88,9 +89,9 @@
 
 %type <state_ast> statement statement_scope control_scope if then else do do_init
 %type <state_block> statement_scope_list scope
+
 %type <expression_ast> expression arithmetic boolean routine_call assignment constant do_express
 %type <expression_block_ast> expression_block
-%type <reference_ast> reference
 
     // start variable
 %start start
@@ -110,8 +111,8 @@ program
     /* Routines */
 
 routine_list
-    : routine_list routine                                              { $$ = new Block<Routine*, AST>($1, $2); }
-    | %empty                                                            { $$ = new Block<Routine*, AST>(); }
+    : routine_list routine                                              { $$ = new Block<Routine*, Node>($1, $2); }
+    | %empty                                                            { $$ = new Block<Routine*, Node>(); }
     ;
 
 
@@ -129,12 +130,12 @@ parameter_list
     ;
 
 polytype_declaration
-    : type poly_declaration "," polytype_declaration                    { $$ = new Block<Declaration*,Statement>( $4, new Declaration($1, $2) ); }
-    | type poly_declaration                                             { $$ = new Block<Declaration*,Statement>( new Declaration($1, $2) ); }
+    : type uni_declaration_list "," polytype_declaration                { $$ = new Block<Declaration*,Statement>( $4, new Declaration($1, $2) ); }
+    | type uni_declaration_list                                         { $$ = new Block<Declaration*,Statement>( new Declaration($1, $2) ); }
     ;
 
-poly_declaration
-    : poly_declaration "," uni_declaration                              { $$ = new Block<UniDec*,Statement>($1, $3); }
+uni_declaration_list
+    : uni_declaration_list "," uni_declaration                          { $$ = new Block<UniDec*,Statement>($1, $3); }
     | uni_declaration                                                   { $$ = new Block<UniDec*,Statement>($1); }
     ;
 
@@ -222,9 +223,10 @@ do
 
 do_init
     : polytype_declaration                                              { $$ = $1; }
-    | poly_declaration                                                  { $$ = $1; }
+    | uni_declaration_list                                              { $$ = $1; }
     | %empty                                                            { $$ = nullptr; }
     ;
+
 do_express
     : expression                                                        { $$ = $1; }
     | %empty                                                            { $$ = nullptr; }
@@ -265,7 +267,6 @@ arithmetic
     | "-" expression                                                    { $$ = new UnaryOp(new std::string("-"), $2); }
     ;
 
-
 boolean
     : expression ">" expression                                         { $$ = new BinaryOp($1, new std::string(">"), $3); }
     | expression ">=" expression                                        { $$ = new BinaryOp($1, new std::string(">="), $3); }
@@ -278,17 +279,15 @@ boolean
     | "!" expression                                                    { $$ = new UnaryOp(new std::string("!"), $2); }
     ;
 
-
 routine_call
     : IDENTIFIER "(" expression_block ")"                               { $$ = new RoutineCall($1, $3); }
     | builtin "(" expression_block ")"                                  { $$ = new RoutineCall($1, $3); }
     ;
 
 expression_block
-    : expression_block "," expression                                   { $$ = new Block<Expression*,AST>($1, $3); }
-    | expression                                                        { $$ = new Block<Expression*,AST>($1); }
+    : expression_block "," expression                                   { $$ = new Block<Expression*,Node>($1, $3); }
+    | expression                                                        { $$ = new Block<Expression*,Node>($1); }
     ;
-
 
 builtin
     : K_PRINT_INTEGER                                                   { $$ = new std::string("print_integer"); }
@@ -298,7 +297,6 @@ builtin
     | K_READ_DOUBLE                                                     { $$ = new std::string("read_double"); }
     | K_READ_STRING                                                     { $$ = new std::string("read_string"); }
     ;
-
 
 %%
 

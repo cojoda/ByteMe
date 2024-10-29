@@ -4,36 +4,36 @@ class Routine;
 
 
 
-    /* AST */
+    /* Node */
 
-std::string AST::toString() const
+std::string Node::toString() const
 {
     return std::string();
 }
 
-void AST::print(std::ostream& os) const
+void Node::print(std::ostream& os) const
 {
     os << toString();
 }
 
 
-std::ostream& operator<<(std::ostream& os, const AST& ast)
+std::ostream& operator<<(std::ostream& os, const Node& ast)
 {
     ast.print(os);
     return os;
 }
 
-std::string operator+(const AST& ast, const std::string& str)
+std::string operator+(const Node& ast, const std::string& str)
 {
     return ast.toString() + str;
 }
 
-std::string operator+(const std::string& str, const AST& ast)
+std::string operator+(const std::string& str, const Node& ast)
 {
     return str + ast.toString();
 }
 
-std::string& operator+=(std::string& lhs, const AST& rhs) {
+std::string& operator+=(std::string& lhs, const Node& rhs) {
     lhs += rhs.toString();
     return lhs;
 }

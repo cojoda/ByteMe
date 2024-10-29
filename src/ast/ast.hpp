@@ -1,5 +1,5 @@
-#ifndef AST_HPP
-#define AST_HPP
+#ifndef Node_HPP
+#define Node_HPP
 
 #include <string>
 #include <vector>
@@ -8,29 +8,64 @@
 
 
 
-class Program;
 class Routine;
 class Declaration;
-class Reference;
-class Expression;
-class UniDec;
 
 
 
 
 
-class AST
+
+template <typename T, typename V>
+class Block : public virtual V
+{
+private:
+    std::vector<T>* list;
+
+public:
+    Block() {list = new std::vector<T>();}
+
+    Block(T item)
+    {
+        if (!item) return;
+        if (!list) list = new std::vector<T>();
+        list->push_back(item);
+    } 
+
+    Block(Block<T,V>* block, T item)
+    {
+        if (block) list = block->list;
+        if (item) list->push_back(item);
+    }
+
+    std::string toString() const override
+    {
+        std::string result = std::string();
+        if (!list) return result;
+        for (T item : *list) {
+            if (item) result += *item;
+        }
+        return result;
+    }
+};
+
+
+
+
+
+
+class Node
 {
 public:
-    AST() = default;
-    virtual ~AST() = default;
+    Node() = default;
+    virtual ~Node() = default;
 
     virtual std::string toString() const;
     virtual void print(std::ostream& os) const;
-    friend std::ostream& operator<<(std::ostream& os, const AST& ast);
-    friend std::string operator+(const AST& ast, const std::string& str);
-    friend std::string operator+(const std::string& str, const AST& ast);
-    friend std::string& operator+=(std::string& lhs, const AST& rhs);
+    friend std::ostream& operator<<(std::ostream& os, const Node& node);
+    friend std::string operator+(const Node& node, const std::string& str);
+    friend std::string operator+(const std::string& str, const Node& node);
+    friend std::string& operator+=(std::string& lhs, const Node& rhs);
     operator std::string() const { return toString(); }
 };
 
@@ -39,7 +74,7 @@ public:
 
 
 
-class Statement : public virtual AST
+class Statement : public virtual Node
 {
 public:
     virtual ~Statement() = default;
@@ -78,7 +113,6 @@ public:
         std::string result = std::string("<reference:");
         result += (name ? *name : "NULL,");
         result += (index ? std::string(*index ) : "NULL") + ">";
-        std::cerr << result << std::endl;
         return result;
     }
 };
@@ -92,8 +126,10 @@ class Return : public virtual Statement
 {
 private:
     Expression* return_value;
+
 public:
     Return() = default;
+
     Return(Expression* return_value) : return_value(return_value) {};
 
     std::string toString() const override
@@ -109,49 +145,17 @@ public:
 
 
 
-template <typename T, typename V>
-class Block : public virtual V
-{
-private:
-    std::vector<T>* list;
-public:
-    Block() {list = new std::vector<T>();}
-    Block(T item)
-    {
-        if (!item) return;
-        if (!list) list = new std::vector<T>();
-        list->push_back(item);
-    } 
-    Block(Block<T,V>* block, T item)
-    {
-        if (block) list = block->list;
-        if (item) list->push_back(item);
-    }
-    std::string toString() const override
-    {
-        std::string result = std::string();
-        if (!list) return result;
-        for (T item : *list) {
-            if (item) result += *item + "\n";
-        }
-        return result;
-    }
-};
 
 
-
-
-
-
-class Program : public virtual AST
+class Program : public virtual Node
 {
 private:
     std::string*          name;
-    Block<Routine*, AST>* body;
+    Block<Routine*, Node>* body;
 
 public:
-    Program(std::string*           name,
-            Block<Routine*, AST>* routine_block) : name(name),
+    Program(std::string*          name,
+            Block<Routine*, Node>* routine_block) : name(name),
                                                    body(routine_block) {}
 
     std::string toString() const
@@ -171,21 +175,21 @@ public:
 class Routine : public virtual Statement
 {
 private:
-    std::string* name;
+    std::string*                    name;
     Block<Declaration*, Statement>* parameters;
-    Block<Statement*, Statement>*   body;
-    std::string* type;
+    Block<Statement*,   Statement>* body;
+    std::string*                    type;
 
 public:
     Routine(std::string*                    name,
             Block<Declaration*, Statement>* parameters,
-            Block<Statement*, Statement>*   body) : name(name),
+            Block<Statement*,   Statement>* body) : name(name),
                                                     parameters(parameters),
                                                     body(body) {}
 
     Routine(std::string*                    name,
             Block<Declaration*, Statement>* parameters,
-            Block<Statement*, Statement>*   body,
+            Block<Statement*,   Statement>* body,
             std::string*                    type) : name(name),
                                                     parameters(parameters),
                                                     body(body),
@@ -209,35 +213,7 @@ public:
 
 
 
-
-
-class Declaration : public virtual Statement
-{
-private:
-    std::string*         type;
-    Block<UniDec*, Statement>* name_list;
-
-public:
-    Declaration(std::string*         type,
-                Block<UniDec*, Statement>* name_list) : type(type),
-                                                  name_list(name_list) {}
-
-    std::string toString() const override
-    {
-        std::string result = std::string("<Declaration:");
-        result += (type ? *type : "null_type");
-        result += "(";
-        if (name_list) result += *name_list;
-        return result + ")>";
-    }
-};
-
-
-
-
-
-
-class UniDec : public virtual AST
+class UniDec : public virtual Node
 {
 private:
     Reference*  name;
@@ -258,6 +234,32 @@ public:
         return result + ">";
     }
 };
+
+
+
+
+
+class Declaration : public virtual Statement
+{
+private:
+    std::string*               type;
+    Block<UniDec*, Statement>* name_list;
+
+public:
+    Declaration(std::string*               type,
+                Block<UniDec*, Statement>* name_list) : type(type),
+                                                        name_list(name_list) {}
+
+    std::string toString() const override
+    {
+        std::string result = std::string("<Declaration:");
+        result += (type ? *type : "null_type");
+        result += "(";
+        if (name_list) result += *name_list;
+        return result + ")>";
+    }
+};
+
 
 
 
@@ -313,6 +315,7 @@ class UnaryOp : public virtual Expression
 private:
     std::string* operation;
     Expression*  operand;
+
 public:
     UnaryOp(std::string* operation,
             Expression*  operand) : operation(operation),
@@ -337,6 +340,7 @@ private:
     Expression*  loperand;
     std::string* operation;
     Expression*  roperand;
+
 public:
     BinaryOp(Expression*  loperand,
              std::string* operation,
@@ -362,11 +366,11 @@ class RoutineCall : public virtual Expression
 {
 private:
     std::string*             name;
-    Block<Expression*, AST>* argument_list;
+    Block<Expression*, Node>* argument_list;
 
 public:
     RoutineCall(std::string*             name,
-                Block<Expression*, AST>* argument_list) : name(name),
+                Block<Expression*, Node>* argument_list) : name(name),
                                                           argument_list(argument_list) {}
 
     std::string toString() const override
@@ -426,12 +430,12 @@ private:
 
 public:
     DoStatement(Statement*  initialization,
-                 Expression* condition,
-                 Expression* update,
-                 Statement*  body) : initialization(initialization),
-                                      condition(condition),
-                                      update(update),
-                                      body(body) {};
+                Expression* condition,
+                Expression* update,
+                Statement*  body) : initialization(initialization),
+                                    condition(condition),
+                                    update(update),
+                                    body(body) {};
 
     std::string toString() const override
     {
@@ -450,8 +454,11 @@ class WhileStatement : public virtual Statement
 private:
     Expression* condition;
     Statement* body;
+
 public:
-    WhileStatement(Expression* condition, Statement* body) : condition(condition), body(body) {}
+    WhileStatement(Expression* condition,
+                   Statement*  body) : condition(condition),
+                                       body(body) {}
 
     std::string toString() const override
     {
@@ -463,4 +470,7 @@ public:
 };
 
 
-#endif // AST_HPP
+
+
+
+#endif // Node_HPP
