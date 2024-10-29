@@ -29,13 +29,13 @@ bin:
 
 # Object Files
 
-obj/ast.o: obj src/parser/ast.cpp src/parser/ast.hpp
-	$(CXX) $(CXXFLAGS) -c src/parser/ast.cpp -o obj/ast.o
+obj/ast.o: obj src/ast/ast.cpp src/ast/ast.hpp
+	$(CXX) $(CXXFLAGS) -c src/ast/ast.cpp -o obj/ast.o
 
 obj/lexer.o: obj src/lexer/lexer.cpp src/parser/parser.hpp src/lexer/token.hpp
 	$(CXX) $(CXXFLAGS) -c src/lexer/lexer.cpp -o obj/lexer.o
 
-obj/parser.o: obj src/parser/parser.cpp src/parser/parser.hpp src/parser/ast.hpp
+obj/parser.o: obj src/parser/parser.cpp src/parser/parser.hpp src/ast/ast.hpp
 	$(CXX) $(CXXFLAGS) -c src/parser/parser.cpp -o obj/parser.o
 
 obj/byte.o: obj src/byte.cpp
@@ -71,7 +71,7 @@ test-mg: clean bin/byte
 
 # Test parser grammar for conflicts & test against all functions/procedures in mg.f24
 GRAMMAR_TESTS := $(wildcard tests/grammar/*.f24)
-grammar: $(GRAMMAR_TESTS)
+grammar: bin/byte $(GRAMMAR_TESTS)
 	@echo $(shell make -s clean)
 	@echo $(shell make -s)
 	clear && clear
@@ -91,5 +91,5 @@ grammar: $(GRAMMAR_TESTS)
 prelexer: obj src/lexer/lexer.cpp src/parser/parser.hpp src/lexer/token.hpp
 	$(CXX) $(CXXFLAGS) $(CXXINCLUDE) -E src/lexer/lexer.cpp -o src/lexer/prelexer.cpp  
 
-preparser: obj src/parser/parser.cpp src/parser/parser.hpp src/parser/ast.hpp
+preparser: obj src/parser/parser.cpp src/parser/parser.hpp src/ast/ast.hpp
 	$(CXX) $(CXXFLAGS) $(CXXINCLUDE) -E src/parser/parser.cpp -o src/parser/preparser.cpp

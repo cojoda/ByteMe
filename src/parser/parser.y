@@ -2,7 +2,7 @@
     #include <iostream>
     #include <string>
 
-    #include "src/parser/ast.hpp"
+    #include "src/ast/ast.hpp"
 
     int  yparse();
     int  yylex(void);
@@ -11,10 +11,21 @@
 
 %union
 {
-    int          i_val;
-    double       d_val;
-    std::string* s_val;
-    AST*         ast;
+    int           i_val;
+    double        d_val;
+    std::string*  s_val;
+    AST*                           ast;
+    Program*                       program_ast;
+    Routine*                       routine_ast;
+    Block<Routine*,    AST>*       routine_block;
+    Block<Expression*, AST>*       expression_block_ast;
+    Block<UniDec*,     Statement>* unidec_block_ast;
+    Block<Declaration*,Statement>* dec_ast;
+    Block<Statement*,  Statement>* state_block;
+    Expression*                    expression_ast;
+    Reference*                     reference_ast;
+    UniDec*                        unidec_ast;
+    Statement*                     state_ast;
 }
     // type keywords
 %token    K_INTEGER K_DOUBLE K_STRING
@@ -64,13 +75,22 @@
 %token <i_val> ICONSTANT
 %token <d_val> DCONSTANT
 %token <s_val> SCONSTANT IDENTIFIER
-%type <s_val> start program
-%type <s_val> routine_block routine parameter_block
-%type <s_val> scope statement_block statement
-%type <s_val> if then else do assignment
-%type <s_val> declaration_block single_declaration multi_declaration
-%type <s_val> expression_block expression arithmetic boolean function_call builtin
-%type <s_val> reference constant type  
+%type  <s_val> start
+%type  <s_val> type builtin
+
+%type <dec_ast> polytype_declaration parameter_list
+%type <unidec_block_ast> poly_declaration
+%type <unidec_ast> uni_declaration
+
+%type <program_ast> program
+%type <routine_block> routine_list
+%type <routine_ast> routine
+
+%type <state_ast> statement statement_scope control_scope if then else do do_init
+%type <state_block> statement_scope_list scope
+%type <expression_ast> expression arithmetic boolean routine_call assignment constant do_express
+%type <expression_block_ast> expression_block
+%type <reference_ast> reference
 
     // start variable
 %start start
@@ -78,203 +98,205 @@
 %%
 
 start
-    : program                                                           { }
+    : program                                                           { std::cerr << *$1 << std::endl; }
     ;
 
 
 program
-    : K_PROGRAM IDENTIFIER "{" routine_block "}"                        { }
+    : K_PROGRAM IDENTIFIER "{" routine_list "}"                         { $$ = new Program($2, $4); }
     ;
 
 
-routine_block
-    : routine_block routine                                             { }
-    | %empty                                                            { }
+    /* Routines */
+
+routine_list
+    : routine_list routine                                              { $$ = new Block<Routine*, AST>($1, $2); }
+    | %empty                                                            { $$ = new Block<Routine*, AST>(); }
     ;
 
 
 routine
-    : K_PROCEDURE IDENTIFIER parameter_block scope                      { /* std::cerr << "<procedure:" << *$2 << "(){}>"; */ }
-    | K_FUNCTION type IDENTIFIER parameter_block scope                  { /* std::cerr << "<function:" << *$2 << ":" << *$3 << "(){}>";   */}
+    : K_PROCEDURE IDENTIFIER parameter_list scope                      { $$ = new Routine($2, $3, $4); }
+    | K_FUNCTION type IDENTIFIER parameter_list scope                  { $$ = new Routine($3, $4, $5, $2); }
     ;
 
 
-parameter_block
-    : "(" declaration_block ")"                                         { }
-    | "(" ")"                                                           { }
+    /* Variables */
+
+parameter_list
+    : "(" polytype_declaration ")"                                      { $$ = $2; }
+    | "(" ")"                                                           { $$ = new Block<Declaration*, Statement>(); }
     ;
 
+polytype_declaration
+    : type poly_declaration "," polytype_declaration                    { $$ = new Block<Declaration*,Statement>( $4, new Declaration($1, $2) ); }
+    | type poly_declaration                                             { $$ = new Block<Declaration*,Statement>( new Declaration($1, $2) ); }
+    ;
+
+poly_declaration
+    : poly_declaration "," uni_declaration                              { $$ = new Block<UniDec*,Statement>($1, $3); }
+    | uni_declaration                                                   { $$ = new Block<UniDec*,Statement>($1); }
+    ;
+
+uni_declaration
+    : reference                                                         { $$ = new UniDec($1); }
+    | reference ":=" expression                                         { $$ = new UniDec($1, $3); }
+    ;
+
+reference
+    : IDENTIFIER                                                        { $$ = new Reference($1); }
+    | IDENTIFIER "[" "]"                                                { $$ = new Reference($1); }
+    | IDENTIFIER "[" expression "]"                                     { $$ = new Reference($1, $3); }
+    ;
+
+constant
+    : ICONSTANT                                                         { $$ = new Constant(new std::string("ICONST")); }
+    | DCONSTANT                                                         { $$ = new Constant(new std::string("DCONST")); }
+    | SCONSTANT                                                         { $$ = new Constant(new std::string("SCONST")); }
+    ;
+
+type
+    : K_INTEGER                                                         { $$ = new std::string("integer"); }
+    | K_DOUBLE                                                          { $$ = new std::string("double"); }
+    | K_STRING                                                          { $$ = new std::string("string"); }
+    ;
+
+
+    /* Scope */
 
 scope
-    : "{" scope_state "}"                                               { }
+    : "{" statement_scope_list "}"                                      { $$ = $2; }
+    ;
+
+statement_scope_list
+    : statement_scope_list statement_scope                              { $$ = new Block<Statement*,Statement>($1, $2); }
+    | %empty                                                            { $$ = new Block<Statement*,Statement>(); }
     ;
 
 
-scope_state
-    : scope_state statement_block                                       { }
-    | %empty                                                            { }
-    ;
-
-
-statement_block
-    : statement ";"                                                     { }
-    | if                                                                { }
-    | do                                                                { }
-    | scope                                                             { }
-    | routine                                                           { }
+    // statement wrapper
+statement_scope
+    : statement ";"                                                     { $$ = $1; }
+    | if                                                                { $$ = $1; }
+    | do                                                                { $$ = $1; }
+    | scope                                                             { $$ = $1; }
+    | routine                                                           { $$ = $1; }
     ;
 
 
 statement
-    : declaration_block                                                 { }
-    | expression                                                        { }
-    | K_RETURN                                                          { }
-    | K_RETURN expression                                               { }
-    | %empty                                                            { }
+    : polytype_declaration                                              { $$ = $1; }
+    | expression                                                        { $$ = $1; }
+    | K_RETURN                                                          { $$ = new Return(); }
+    | K_RETURN expression                                               { $$ = new Return($2); }
+    | %empty                                                            { $$ = nullptr; }
     ;
 
 
-    // control statements
+    /* Control */
 
 control_scope
-    : statement ";"                                                     { }
-    | statement if                                                      { }
-    | scope                                                             { }
+    : statement ";"                                                     { $$ = $1; }
+    | statement if                                                      { $$ = $1; }
+    | scope                                                             { $$ = $1; }
 
 
 if
-    : K_IF "(" expression ")" then %prec LOWER_THAN_ELSE                { }
-    | K_IF "(" expression ")" then else                                 { }
+    : K_IF "(" expression ")" then %prec LOWER_THAN_ELSE                { $$ = new IfStatement($3, $5); }
+    | K_IF "(" expression ")" then else                                 { $$ = new IfStatement($3, $5, $6); }
     ;
 
 then
-    : K_THEN control_scope                                              { }
+    : K_THEN control_scope                                              { $$ = $2; }
     ;
 
 else
-    : K_ELSE control_scope                                              { }
+    : K_ELSE control_scope                                              { $$ = $2; }
     ;
 
 do
-    : K_DO "(" do_init ";" do_express ";" do_express ")" control_scope  { }
-    | K_DO K_WHILE "(" expression ")" control_scope                     { }
-    | K_DO K_UNTIL "(" expression ")" control_scope                     { }
+    : K_DO "(" do_init ";" do_express ";" do_express ")" control_scope  { $$ = new DoStatement($3, $5, $7, $9); }
+    | K_DO K_WHILE "(" expression ")" control_scope                     { $$ = new WhileStatement($4, $6); }
+    | K_DO K_UNTIL "(" expression ")" control_scope                     { $$ = new WhileStatement($4, $6);}
     ;
 
 do_init
-    : declaration_block                                                 { }
-    | multi_declaration                                                 { }
-    | %empty                                                            { }
+    : polytype_declaration                                              { $$ = $1; }
+    | poly_declaration                                                  { $$ = $1; }
+    | %empty                                                            { $$ = nullptr; }
     ;
 do_express
-    : expression                                                        { }
-    | %empty                                                            { }
+    : expression                                                        { $$ = $1; }
+    | %empty                                                            { $$ = nullptr; }
     ;
 
 
-declaration_block
-    : type multi_declaration  "," declaration_block                     { /* std::cerr << "<" << *$1 << ":" << *$2 << ">";  */}
-    | type multi_declaration                                            { /* std::cerr << "<" << *$1 << ":" << *$2 << ">"; */ }
-    ;
-
-
-multi_declaration
-    : multi_declaration "," single_declaration                          { }
-    | single_declaration                                                { }
-    ;
-
-single_declaration
-    : reference                                                         { }
-    | reference ":=" expression                                         { }
-    ;
-
-
-
-reference
-    : IDENTIFIER                                                        { }
-    | IDENTIFIER "[" "]"                                                { }
-    | IDENTIFIER "[" expression "]"                                     { }
-    ;
-
-
-constant
-    : ICONSTANT                                                         { }
-    | DCONSTANT                                                         { }
-    | SCONSTANT                                                         { }
-    ;
-
-type
-    : K_INTEGER                                                         { }
-    | K_DOUBLE                                                          { }
-    | K_STRING                                                          { }
-    ;
-
-
+    /* Expressions */
 
 expression
-    : arithmetic                                                        { }
-    | boolean                                                           { }        
-    | function_call                                                     { }
-    | reference                                                         { }
-    | constant                                                          { }
-    | "(" expression ")"                                                { }
-    | assignment                                                        { }
+    : arithmetic                                                        { $$ = $1; }
+    | boolean                                                           { $$ = $1; }        
+    | routine_call                                                      { $$ = $1; }
+    | reference                                                         { $$ = $1; }
+    | constant                                                          { $$ = $1; }
+    | "(" expression ")"                                                { $$ = $2; }
+    | assignment                                                        { $$ = $1; }
     ;
 
 
 assignment
-    : reference ":=" expression                                         { /* std::cerr << "<" << *$1 << "+=" << *$3 << ">" ; */ }
-    | reference "+=" expression                                         {  }
-    | reference "-=" expression                                         {  }
-    | reference "*=" expression                                         {  }
-    | reference "/=" expression                                         {  }
-    | reference "%=" expression                                         {  }
+    : reference ":=" expression                                         { $$ = new Assignment($1, new std::string(":="), $3); }
+    | reference "+=" expression                                         { $$ = new Assignment($1, new std::string("+="), $3); }
+    | reference "-=" expression                                         { $$ = new Assignment($1, new std::string("-="), $3); }
+    | reference "*=" expression                                         { $$ = new Assignment($1, new std::string("*="), $3); }
+    | reference "/=" expression                                         { $$ = new Assignment($1, new std::string("/="), $3); }
+    | reference "%=" expression                                         { $$ = new Assignment($1, new std::string("%="), $3); }
     ; 
 
 arithmetic
-    : expression "+" expression                                         { /*std::cerr << "<" + *$1 + "+" + *$3 + ">";  */ }
-    | expression "-" expression                                         { }
-    | expression "*" expression                                         { }
-    | expression "/" expression                                         { }
-    | expression "%" expression                                         { }
-    | expression "^" expression                                         { }
-    | expression "++"                                                   { }
-    | expression "--"                                                   { }
-    | MINUS expression                                                  { }
+    : expression "+" expression                                         { $$ = new BinaryOp($1, new std::string("+"), $3); }
+    | expression "-" expression                                         { $$ = new BinaryOp($1, new std::string("-"), $3); }
+    | expression "*" expression                                         { $$ = new BinaryOp($1, new std::string("*"), $3); }
+    | expression "/" expression                                         { $$ = new BinaryOp($1, new std::string("/"), $3); }
+    | expression "%" expression                                         { $$ = new BinaryOp($1, new std::string("%"), $3); }
+    | expression "^" expression                                         { $$ = new BinaryOp($1, new std::string("^"), $3); }
+    | expression "++"                                                   { $$ = new UnaryOp(new std::string("++"), $1); }
+    | expression "--"                                                   { $$ = new UnaryOp(new std::string("--"), $1); }
+    | "-" expression                                                    { $$ = new UnaryOp(new std::string("-"), $2); }
     ;
 
 
 boolean
-    : expression ">" expression                                         { }
-    | expression ">=" expression                                        { }
-    | expression "<" expression                                         { }
-    | expression "<=" expression                                        { }
-    | expression "==" expression                                        { }
-    | expression "!=" expression                                        { }
-    | expression "&&" expression                                        { }
-    | expression "||" expression                                        { }
-    | "!" expression                                                    { }
+    : expression ">" expression                                         { $$ = new BinaryOp($1, new std::string(">"), $3); }
+    | expression ">=" expression                                        { $$ = new BinaryOp($1, new std::string(">="), $3); }
+    | expression "<" expression                                         { $$ = new BinaryOp($1, new std::string("<"), $3); }
+    | expression "<=" expression                                        { $$ = new BinaryOp($1, new std::string("<="), $3); }
+    | expression "==" expression                                        { $$ = new BinaryOp($1, new std::string("=="), $3); }
+    | expression "!=" expression                                        { $$ = new BinaryOp($1, new std::string("!="), $3); }
+    | expression "&&" expression                                        { $$ = new BinaryOp($1, new std::string("&&"), $3); }
+    | expression "||" expression                                        { $$ = new BinaryOp($1, new std::string("||"), $3); }
+    | "!" expression                                                    { $$ = new UnaryOp(new std::string("!"), $2); }
     ;
 
 
-function_call
-    : IDENTIFIER "(" expression_block ")"                               { }
-    | builtin "(" expression_block ")"                                  { }
+routine_call
+    : IDENTIFIER "(" expression_block ")"                               { $$ = new RoutineCall($1, $3); }
+    | builtin "(" expression_block ")"                                  { $$ = new RoutineCall($1, $3); }
     ;
 
 expression_block
-    : expression_block "," expression                                   { }
-    | expression                                                        { }
+    : expression_block "," expression                                   { $$ = new Block<Expression*,AST>($1, $3); }
+    | expression                                                        { $$ = new Block<Expression*,AST>($1); }
     ;
 
 
 builtin
-    : K_PRINT_INTEGER                                                   { }
-    | K_PRINT_DOUBLE                                                    { /* $$ = new std::string("(procedure:print_double"); */ }
-    | K_PRINT_STRING                                                    { /* $$ = new std::string("(procedure:print_string"); */ }
-    | K_READ_INTEGER                                                    { /* $$ = new std::string("(procedure:read_integer"); */ }
-    | K_READ_DOUBLE                                                     { /* $$ = new std::string("(procedure:read_double"); */ }
-    | K_READ_STRING                                                     { /* $$ = new std::string("(procedure:read_string"); */ }
+    : K_PRINT_INTEGER                                                   { $$ = new std::string("print_integer"); }
+    | K_PRINT_DOUBLE                                                    { $$ = new std::string("print_double"); }
+    | K_PRINT_STRING                                                    { $$ = new std::string("print_string"); }
+    | K_READ_INTEGER                                                    { $$ = new std::string("read_integer"); }
+    | K_READ_DOUBLE                                                     { $$ = new std::string("read_double"); }
+    | K_READ_STRING                                                     { $$ = new std::string("read_string"); }
     ;
 
 
