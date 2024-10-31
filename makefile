@@ -35,7 +35,7 @@ obj/symbol.o: obj src/symbol/symbol.cpp src/symbol/symbol.hpp
 obj/ast.o: obj src/ast/ast.cpp src/ast/ast.hpp
 	$(CXX) $(CXXFLAGS) -c src/ast/ast.cpp -o obj/ast.o
 
-obj/lexer.o: obj src/lexer/lexer.cpp src/parser/parser.hpp src/lexer/token.hpp
+obj/lexer.o: obj src/lexer/lexer.cpp src/parser/parser.hpp
 	$(CXX) $(CXXFLAGS) -c src/lexer/lexer.cpp -o obj/lexer.o
 
 obj/parser.o: obj src/parser/parser.cpp src/parser/parser.hpp src/ast/ast.hpp
