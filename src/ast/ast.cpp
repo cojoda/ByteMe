@@ -41,6 +41,7 @@ std::string& operator+=(std::string& lhs, const Node& rhs) {
 
 
 
+    /* Program */
 
 void Program::initSymbolTree()
 {
@@ -63,6 +64,7 @@ std::string Program::toString() const
 
 
 
+    /* Routine */
 
 void Routine::initSymbolTree(Scope* parent)
 {
@@ -82,8 +84,6 @@ void Routine::initSymbolTree(Scope* parent)
     }
 }
 
-
-
 std::string Routine::toString() const
 {
     std::string result = std::string();
@@ -100,13 +100,14 @@ void Return::initSymbolTree() {}
 
 
 
+    /* Control Statements */
+
 void IfStatement::initSymbolTree(Scope* parent)
 {
     scope = new Scope(parent);
     if (then_statement) then_statement->initSymbolTree(scope);
     if (else_statement) else_statement->initSymbolTree(scope);
 }
-
 
 std::string IfStatement::toString() const
 {
@@ -142,6 +143,7 @@ std::string WhileStatement::toString() const
     result += "\n\t" + (scope ? scope->toString() : "<NULL_SCOPE>");
     return result + ">";
 }
+
 
 
 void Declaration::initSymbolTree(Scope* scope)

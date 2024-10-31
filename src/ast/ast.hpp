@@ -16,8 +16,6 @@ class Declaration;
 
 
 
-
-
 template <typename T, typename V>
 class Block : public virtual V
 {
@@ -59,8 +57,6 @@ public:
 
 
 
-
-
 class Node
 {
 public:
@@ -83,7 +79,6 @@ public:
 
 
 
-
 class Statement : public virtual Node
 {
 public:
@@ -93,15 +88,11 @@ public:
 
 
 
-
-
 class Expression : public virtual Statement
 {
 public:
     virtual ~Expression() = default;
 };
-
-
 
 
 
@@ -124,8 +115,6 @@ public:
 
 
 
-
-
 class Return : public virtual Statement
 {
 private:
@@ -138,10 +127,6 @@ public:
 
     void initSymbolTree();
 };
-
-
-
-
 
 
 
@@ -166,8 +151,6 @@ public:
 
     std::string toString() const override;
 };
-
-
 
 
 
@@ -230,7 +213,6 @@ public:
 
 
 
-
 class Declaration : public virtual Statement
 {
 protected:
@@ -248,8 +230,6 @@ public:
 
 
 
-
-
 class Constant : public virtual Expression
 {
 private:
@@ -258,7 +238,6 @@ private:
 public:
     Constant(std::string* value) : value(value) {}
 };
-
 
 
 
@@ -281,7 +260,6 @@ public:
 
 
 
-
 class UnaryOp : public virtual Expression
 {
 private:
@@ -293,7 +271,6 @@ public:
             Expression*  operand) : operation(operation),
                                     operand(operand) {};
 };
-
 
 
 
@@ -316,7 +293,6 @@ public:
 
 
 
-
 class RoutineCall : public virtual Expression
 {
 private:
@@ -328,7 +304,6 @@ public:
                 Block<Expression*, Node>* argument_list) : name(name),
                                                            argument_list(argument_list) {}
 };
-
 
 
 
@@ -386,7 +361,6 @@ public:
 
 
 
-
 class WhileStatement : public virtual Statement
 {
 private:
@@ -403,7 +377,6 @@ public:
 
     std::string toString() const override;
 };
-
 
 
 

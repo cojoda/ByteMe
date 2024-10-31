@@ -8,13 +8,6 @@
 
 
 
-
-
-
-
-
-
-
 class Symbol 
 {
 public:
@@ -33,7 +26,6 @@ public:
     friend std::string operator+(const std::string& str, const Symbol& symbol);
     friend std::string& operator+=(std::string& lhs, const Symbol& rhs);
 };
-
 
 
 
@@ -94,9 +86,6 @@ public:
     void enterScope();
     void exitScope();
 };
-
-
-
 
 
 

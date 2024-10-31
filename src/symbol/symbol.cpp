@@ -44,7 +44,6 @@ std::string& operator+=(std::string& lhs, const Scope& rhs) {
 
 
 
-
     /* Symbol */
 
 Symbol::Symbol(std::string* type,
@@ -142,7 +141,6 @@ std::string& operator+=(std::string& lhs, const SymbolTable& symbol_table) {
 
 
 
-
     /* SymbolStack */
 
 Scope* SymbolStack::currentScope()
@@ -159,8 +157,6 @@ void SymbolStack::exitScope()
 {
     scope_stack.pop_back();
 }
-
-
 
 
 
