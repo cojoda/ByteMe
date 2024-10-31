@@ -17,8 +17,8 @@
     Node*                          node_ast;
     Program*                       program_ast;
     Routine*                       routine_ast;
-    Block<Routine*,    Node>*       routine_block;
-    Block<Expression*, Node>*       expression_block_ast;
+    Block<Routine*,    Node>*      routine_block;
+    Block<Expression*, Node>*      expression_block_ast;
     Block<UniDec*,     Statement>* unidec_block_ast;
     Block<Declaration*,Statement>* polytypedec_ast;
     Block<Statement*,  Statement>* state_block;
@@ -99,7 +99,7 @@
 %%
 
 start
-    : program                                                           { std::cerr << *$1 << std::endl; }
+    : program                                                           { std::cerr << *$1 << std::endl;}
     ;
 
 
@@ -200,7 +200,7 @@ control_scope
     : statement ";"                                                     { $$ = $1; }
     | statement if                                                      { $$ = $1; }
     | scope                                                             { $$ = $1; }
-
+    ;
 
 if
     : K_IF "(" expression ")" then %prec LOWER_THAN_ELSE                { $$ = new IfStatement($3, $5); }

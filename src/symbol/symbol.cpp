@@ -6,37 +6,139 @@
 
     /* Scope */
 
-Scope::Scope(Scope* parent) : parent(parent) {}
+Scope::Scope(Scope* parent) : parent(parent),
+                              depth(parent->depth + 1) {}
+
+std::string Scope::toString() const
+{
+    std::string result = std::string("<scope\n\tdepth:" + std::to_string(depth));
+    return  result + "\n" + symbol_table.toString();
+}
+
+void Scope::print(std::ostream& os) const
+{
+    os << toString();
+}
+
+
+std::ostream& operator<<(std::ostream& os, const Scope& scope)
+{
+    scope.print(os);
+    return os;
+}
+
+std::string operator+(const Scope& scope, const std::string& str)
+{
+    return scope.toString() + str;
+}
+
+std::string operator+(const std::string& str, const Scope& scope)
+{
+    return str + scope.toString();
+}
+
+std::string& operator+=(std::string& lhs, const Scope& rhs) {
+    lhs += rhs.toString();
+    return lhs;
+}
 
 
 
 
     /* Symbol */
 
-Symbol::Symbol(const std::string& name,
-               const std::string& type,
-                     int          scopeLevel) : name(name),
-                                                type(type),
-                                                scopeLevel(scopeLevel) {}
- 
+Symbol::Symbol(std::string* type,
+               std::string* name) : type(type),
+                                    name(name) {}
+
+std::string* Symbol::getName()
+{
+    return name;
+}
+
+std::string Symbol::toString() const
+{
+    return + "<" + *type + ":" + *name + ">";
+}
+
+void Symbol::print(std::ostream& os) const
+{
+    os << toString();
+}
+
+std::ostream& operator<<(std::ostream& os, const Symbol& symbol)
+{
+    symbol.print(os);
+    return os;
+}
+
+std::string operator+(const Symbol& symbol, const std::string& str)
+{
+    return symbol.toString() + str;
+}
+
+std::string operator+(const std::string& str, const Symbol& symbol)
+{
+    return str + symbol.toString();
+}
+
+std::string& operator+=(std::string& lhs, const Symbol& symbol) {
+    lhs += symbol.toString();
+    return lhs;
+}
+
 
 
     /* SymbolTable  */
 
-void SymbolTable::insert(const std::string& name,
-                               Symbol*      symbol) 
+void SymbolTable::insert(Symbol* symbol) 
 {
-    table[name] = symbol;
+    if (symbol) table.insert(std::make_pair(symbol->getName(), symbol));
 }
 
-Symbol* SymbolTable::lookup(const std::string& name) 
+Symbol* SymbolTable::lookup(std::string* name) 
 {
     auto item = table.find(name);
     return item != table.end() ? item->second : nullptr;
 }
 
+std::string SymbolTable::toString() const
+{
+    std::string result = std::string("<symbol table:");
 
+    for (auto pair : table) {
+        std::string* key = pair.first;
+        Symbol*    value = pair.second;
+        result += + "\n\t" + *key + ":" + value->toString();
+    }
+    return result + ">";
+}
 
+void SymbolTable::print(std::ostream& os) const
+{
+    os << toString();
+}
+
+std::ostream& operator<<(std::ostream& os, const SymbolTable& symbol_table)
+{
+    symbol_table.print(os);
+    return os;
+}
+
+std::string operator+(const SymbolTable& symbol_table, const std::string& str)
+{
+    return symbol_table.toString() + str;
+}
+
+std::string operator+(const std::string& str, const SymbolTable& symbol_table)
+{
+    return str + symbol_table.toString();
+}
+
+std::string& operator+=(std::string& lhs, const SymbolTable& symbol_table) {
+    lhs += symbol_table.toString();
+    return lhs;
+}
 
 
 
@@ -62,18 +164,16 @@ void SymbolStack::exitScope()
 
 
 
+// void checkAssignmentTypes(Variable* lhs,
+//                           Variable* rhs) 
+// {
+//     if (lhs == nullptr)
+//         std::cerr << "Can't assign to an lvalue of null" << std::endl; return;
+
+//     if (rhs == nullptr)
+//         std::cerr << "rvalue has no type" << std::endl; return;
 
 
-void checkAssignmentTypes(Variable* lhs,
-                          Variable* rhs) 
-{
-    if (lhs == nullptr)
-        std::cerr << "Can't assign to an lvalue of null" << std::endl; return;
-    
-    if (rhs == nullptr)
-        std::cerr << "rvalue has no type" << std::endl; return;
-
-
-    if (lhs->type != rhs->type) 
-        std::cerr << "Type mismatch in assignment: " << lhs->type << " != " << rhs->type << std::endl;
-}
+//     if (lhs->type != rhs->type) 
+//         std::cerr << "Type mismatch in assignment: " << lhs->type << " != " << rhs->type << std::endl;
+// }

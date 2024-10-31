@@ -19,8 +19,8 @@ CXXFLAGS := --std=c++11 $(FLEX_INCLUDE) $(CXXINCLUDE)
 
 # ByteMe
 
-bin/byte: bin obj/ast.o obj/lexer.o obj/parser.o obj/byte.o
-	$(CXX) $(CXXFLAGS) obj/ast.o obj/lexer.o obj/parser.o obj/byte.o -o bin/byte
+bin/byte: bin obj/symbol.o obj/ast.o obj/lexer.o obj/parser.o obj/byte.o
+	$(CXX) $(CXXFLAGS) obj/symbol.o obj/ast.o obj/lexer.o obj/parser.o obj/byte.o -o bin/byte
 
 bin:
 	mkdir bin
@@ -28,6 +28,9 @@ bin:
 
 
 # Object Files
+
+obj/symbol.o: obj src/symbol/symbol.cpp src/symbol/symbol.hpp
+	$(CXX) $(CXXFLAGS) -c src/symbol/symbol.cpp -o obj/symbol.o
 
 obj/ast.o: obj src/ast/ast.cpp src/ast/ast.hpp
 	$(CXX) $(CXXFLAGS) -c src/ast/ast.cpp -o obj/ast.o
@@ -71,7 +74,7 @@ test-mg: clean bin/byte
 
 # Test parser grammar for conflicts & test against all functions/procedures in mg.f24
 GRAMMAR_TESTS := $(wildcard tests/grammar/*.f24)
-grammar: bin/byte $(GRAMMAR_TESTS)
+test-grammar: bin/byte $(GRAMMAR_TESTS)
 	@echo $(shell make -s clean)
 	@echo $(shell make -s)
 	clear && clear
@@ -82,7 +85,6 @@ grammar: bin/byte $(GRAMMAR_TESTS)
 	@for testfile in $(GRAMMAR_TESTS); do \
 		echo "Running $$testfile" && bin/byte < $$testfile || exit 1; \
 	done
-	@echo "Running tests/grammar/mg.f24" && bin/byte < tests/grammar/mg.f24 
 	@echo "All tests passed!"
 	
 

@@ -3,8 +3,11 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
+#include <iostream>
 
-#include "src/ast/ast.hpp"
+
+
 
 
 
@@ -15,13 +18,20 @@
 class Symbol 
 {
 public:
-    std::string name;
-    std::string type;
-    int         scopeLevel;
+    std::string* type;
+    std::string* name;
 
-    Symbol(const std::string& name,
-           const std::string& type,
-                 int          scopeLevel);
+    Symbol(std::string* type,
+           std::string* name);
+
+    std::string* getName();
+
+    std::string toString() const;
+    void print(std::ostream& os) const;
+    friend std::ostream& operator<<(std::ostream& os, const Symbol& symbol);
+    friend std::string operator+(const Symbol& symbol, const std::string& str);
+    friend std::string operator+(const std::string& str, const Symbol& symbol);
+    friend std::string& operator+=(std::string& lhs, const Symbol& rhs);
 };
 
 
@@ -30,17 +40,23 @@ public:
 class SymbolTable 
 {
 private:
-    std::unordered_map<std::string, Symbol*> table
-            = std::unordered_map<std::string, Symbol*>();
+    std::unordered_map<std::string*, Symbol*> table
+            = std::unordered_map<std::string*, Symbol*>();
 
 public:
     SymbolTable() = default;
     ~SymbolTable() = default;
 
-    void insert(const std::string& name,
-                      Symbol*      symbol);
+    void insert(Symbol* symbol);
 
-    Symbol* lookup(const std::string& name);
+    Symbol* lookup(std::string* name);
+
+    std::string toString() const;
+    void print(std::ostream& os) const;
+    friend std::ostream& operator<<(std::ostream& os, const SymbolTable& symbol_table);
+    friend std::string operator+(const SymbolTable& symbol_table, const std::string& str);
+    friend std::string operator+(const std::string& str, const SymbolTable& symbol_table);
+    friend std::string& operator+=(std::string& lhs, const SymbolTable& rhs);
 };
 
 
@@ -48,13 +64,20 @@ public:
 class Scope 
 {
 public:
-    SymbolTable symbols;
+    SymbolTable symbol_table;
     Scope*      parent;
+    int         depth = 0;
 
     Scope() = default;
     Scope(Scope* parent);
-};
 
+    std::string toString() const;
+    void print(std::ostream& os) const;
+    friend std::ostream& operator<<(std::ostream& os, const Scope& scope);
+    friend std::string operator+(const Scope& scope, const std::string& str);
+    friend std::string operator+(const std::string& str, const Scope& scope);
+    friend std::string& operator+=(std::string& lhs, const Scope& rhs);
+};
 
 
 // Creates a stack of scopes
