@@ -143,7 +143,7 @@ public:
             Block<Routine*, Node>* routine_block) : name(name),
                                                     body(routine_block)
     {
-        std::cerr << "st init started!" << std::endl;initSymbolTree(); std::cerr << "st init finished!" << std::endl;
+        initSymbolTree();
     }
 
 
