@@ -23,7 +23,7 @@ protected:
     std::vector<T>* list;
 
 public:
-    Block() {list = new std::vector<T>();}
+    Block() { list = new std::vector<T>(); }
 
     Block(T item)
     {
@@ -38,10 +38,7 @@ public:
         if (item) list->push_back(item);
     }
 
-    std::vector<T>* getList()
-    {
-        return list;
-    }
+    std::vector<T>* getList() { return list; }
 
     std::string toString() const override
     {
@@ -60,7 +57,7 @@ public:
 class Node
 {
 public:
-    Node() = default;
+    Node()          = default;
     virtual ~Node() = default;
 
     virtual std::string toString() const;
@@ -134,17 +131,15 @@ public:
 class Program : public virtual Node
 {
 private:
-    std::string*           name;
+    std::string* name;
+    Scope*       scope;
+
     Block<Routine*, Node>* body;
-    Scope* scope;
 
 public:
     Program(std::string*           name,
             Block<Routine*, Node>* routine_block) : name(name),
-                                                    body(routine_block)
-    {
-        initSymbolTree();
-    }
+                                                    body(routine_block) { initSymbolTree(); }
 
 
     void initSymbolTree();
@@ -158,11 +153,12 @@ public:
 class Routine : public virtual Statement
 {
 protected:
-    std::string*                    name;
+    std::string* name;
+    std::string* type;
+    Scope*       scope;
+
     Block<Declaration*, Statement>* parameter_list;
     Block<Statement*,   Statement>* body;
-    std::string*                    type;
-    Scope* scope;
 
 public:
     Routine(std::string*                    name,
@@ -183,10 +179,7 @@ public:
 
     void initSymbolTree(Scope* parent);
 
-    std::string getName()
-    {
-        return (name ? *name : "NULL");
-    }
+    std::string getName() { return (name ? *name : "NULL"); }
 
     std::string toString() const override;
 };
@@ -216,7 +209,8 @@ public:
 class Declaration : public virtual Statement
 {
 protected:
-    std::string*               type;
+    std::string* type;
+
     Block<UniDec*, Statement>* name_list;
 
 public:
@@ -297,10 +291,11 @@ class RoutineCall : public virtual Expression
 {
 private:
     std::string*              name;
+
     Block<Expression*, Node>* argument_list;
 
 public:
-    RoutineCall(std::string*             name,
+    RoutineCall(std::string*              name,
                 Block<Expression*, Node>* argument_list) : name(name),
                                                            argument_list(argument_list) {}
 };
@@ -365,8 +360,8 @@ class WhileStatement : public virtual Statement
 {
 private:
     Expression* condition;
-    Statement* body;
-    Scope* scope;
+    Statement*  body;
+    Scope*      scope;
 
 public:
     WhileStatement(Expression* condition,

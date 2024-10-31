@@ -8,15 +8,9 @@ class Routine;
 void Node::initSymbolTree() {}
 void Node::initSymbolTree(Scope* scope) {}
 
-std::string Node::toString() const
-{
-    return std::string();
-}
+std::string Node::toString() const { return std::string(); }
 
-void Node::print(std::ostream& os) const
-{
-    os << toString();
-}
+void Node::print(std::ostream& os) const { os << toString(); }
 
 std::ostream& operator<<(std::ostream& os, const Node& ast)
 {
@@ -24,17 +18,14 @@ std::ostream& operator<<(std::ostream& os, const Node& ast)
     return os;
 }
 
-std::string operator+(const Node& ast, const std::string& str)
-{
-    return ast.toString() + str;
-}
+std::string operator+(const Node&        ast,
+                      const std::string& str) { return ast.toString() + str; }
 
-std::string operator+(const std::string& str, const Node& ast)
-{
-    return str + ast.toString();
-}
+std::string operator+(const std::string& str,
+                      const Node&        ast) { return str + ast.toString(); }
 
-std::string& operator+=(std::string& lhs, const Node& rhs) {
+std::string& operator+=(std::string& lhs, const Node& rhs)
+{
     lhs += rhs.toString();
     return lhs;
 }
@@ -56,9 +47,9 @@ void Program::initSymbolTree()
 std::string Program::toString() const
 {
     std::string result = std::string("<program:\n\t");
-    result += (name ? *name : "<NULL_NAME>") + "\n\t";
+    result += (name  ? *name             : "<NULL_NAME>")  + "\n\t";
     result += (scope ? scope->toString() : "<NULL_SCOPE>") + "\n";
-    result += (body ? body->toString() : "<NULL_BODY>") + "\n";
+    result += (body  ? body->toString()  : "<NULL_BODY>")  + "\n";
     return result + ">";
 }
 
@@ -87,10 +78,10 @@ void Routine::initSymbolTree(Scope* parent)
 std::string Routine::toString() const
 {
     std::string result = std::string();
-    result += (type ? "<function:" + *type : "<procedure:") + "\n\t";
-    result += (name ? *name : "<NULL_NAME>") + "\n\t";
-    result += (scope ? scope->toString() : "<MULL_SCOPE>") + "\n\t";
-    result += (body ? body->toString() : "<NULL_BODY>");
+    result += (type  ? "<function:" + *type : "<procedure:") + "\n\t";
+    result += (name  ? *name                : "<NULL_NAME>") + "\n\t";
+    result += (scope ? scope->toString()    : "<MULL_SCOPE>") + "\n\t";
+    result += (body  ? body->toString()     : "<NULL_BODY>");
     return result + ">";
 }
 

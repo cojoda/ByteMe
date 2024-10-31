@@ -115,7 +115,6 @@ routine_list
     | %empty                                                            { $$ = new Block<Routine*, Node>(); }
     ;
 
-
 routine
     : K_PROCEDURE IDENTIFIER parameter_list scope                      { $$ = new Routine($2, $3, $4); }
     | K_FUNCTION type IDENTIFIER parameter_list scope                  { $$ = new Routine($3, $4, $5, $2); }
@@ -174,8 +173,6 @@ statement_scope_list
     | %empty                                                            { $$ = new Block<Statement*,Statement>(); }
     ;
 
-
-    // statement wrapper
 statement_scope
     : statement ";"                                                     { $$ = $1; }
     | if                                                                { $$ = $1; }
@@ -183,7 +180,6 @@ statement_scope
     | scope                                                             { $$ = $1; }
     | routine                                                           { $$ = $1; }
     ;
-
 
 statement
     : polytype_declaration                                              { $$ = $1; }
@@ -244,7 +240,6 @@ expression
     | "(" expression ")"                                                { $$ = $2; }
     | assignment                                                        { $$ = $1; }
     ;
-
 
 assignment
     : reference ":=" expression                                         { $$ = new Assignment($1, new std::string(":="), $3); }

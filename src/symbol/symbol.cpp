@@ -50,20 +50,14 @@ Symbol::Symbol(std::string* type,
                std::string* name) : type(type),
                                     name(name) {}
 
-std::string* Symbol::getName()
-{
-    return name;
-}
+std::string* Symbol::getName() { return name; }
 
 std::string Symbol::toString() const
 {
     return + "<" + *type + ":" + *name + ">";
 }
 
-void Symbol::print(std::ostream& os) const
-{
-    os << toString();
-}
+void Symbol::print(std::ostream& os) const { os << toString(); }
 
 std::ostream& operator<<(std::ostream& os, const Symbol& symbol)
 {
@@ -113,10 +107,7 @@ std::string SymbolTable::toString() const
     return result + ">";
 }
 
-void SymbolTable::print(std::ostream& os) const
-{
-    os << toString();
-}
+void SymbolTable::print(std::ostream& os) const { os << toString(); }
 
 std::ostream& operator<<(std::ostream& os, const SymbolTable& symbol_table)
 {
