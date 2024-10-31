@@ -119,14 +119,6 @@ public:
                                    index(index) {};
 
     std::string* getName() { return name; }
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<reference:");
-    //     result += (name ? *name : "NULL,");
-    //     result += (index ? std::string(*index ) : "NULL") + ">";
-    //     return result;
-    // }
 };
 
 
@@ -145,13 +137,6 @@ public:
     Return(Expression* return_value) : return_value(return_value) {};
 
     void initSymbolTree();
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<return:");
-    //     if (return_value) result += *return_value;
-    //     return result + ">";
-    // }
 };
 
 
@@ -180,15 +165,6 @@ public:
     void initSymbolTree();
 
     std::string toString() const override;
-
-    
-    // std::string toString() const
-    // {
-    //     std::string result = std::string("<Program:");
-    //     result += (name ? *name : "null");
-    //     result += "{" + (body ? std::string(*body ) : "null") + "}";
-    //     return result;
-    // }
 };
 
 
@@ -230,18 +206,6 @@ public:
     }
 
     std::string toString() const override;
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<");
-    //     result += (type ? ("Function:" + *type + ",") : ("Procedure:"));
-    //     result += (name ? *name : "null");
-    //     result += "(";
-    //     if (parameter_list) result += *parameter_list;
-    //     result += "){";
-    //     result += (body ? std::string(*body) : "null");
-    //     return result + "}";
-    // }
 };
 
 
@@ -261,14 +225,6 @@ public:
                                 value(value) {}
 
     std::string* getName() { return name->getName(); }
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<");
-    //     result += (name ? std::string(*name) : "NULL");
-    //     result += (value ? (":=" + *value) : ":=NULL");
-    //     return result + ">";
-    // }
 };
 
 
@@ -287,16 +243,6 @@ public:
                                                         name_list(name_list) {}
 
     void initSymbolTree(Scope* scope);
-
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<Declaration:");
-    //     result += (type ? *type : "null_type");
-    //     result += "(";
-    //     if (name_list) result += *name_list;
-    //     return result + ")>";
-    // }
 };
 
 
@@ -311,11 +257,6 @@ private:
 
 public:
     Constant(std::string* value) : value(value) {}
-
-    // std::string toString() const override
-    // {
-    //     return (value ? *value : "NULL");
-    // }
 };
 
 
@@ -335,14 +276,6 @@ public:
                Expression*  value) : lvalue(lvalue),
                                      operation(operation),
                                      value(value) {}
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<");
-    //     result += (lvalue ? std::string(*lvalue) : "NULL");
-    //     result += (value ? ("," + *value): ",NULL") + ">";
-    //     return result;
-    // }
 };
 
 
@@ -359,14 +292,6 @@ public:
     UnaryOp(std::string* operation,
             Expression*  operand) : operation(operation),
                                     operand(operand) {};
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<");
-    //     result += (operation ? *operation : "NULL ");
-    //     result += (operand ? std::string(*operand) : " NULL") + ">";
-    //     return result;
-    // }
 };
 
 
@@ -386,15 +311,6 @@ public:
              Expression*  roperand) : loperand(loperand),
                                       roperand(roperand),
                                       operation(operation) {};
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<");
-    //     result += (loperand ? std::string(*loperand) : "NULL ");
-    //     result += (operation ? *operation : " NULL ");
-    //     result += (roperand ? std::string(*roperand) : " NULL") + ">";
-    //     return  result;
-    // }
 };
 
 
@@ -411,15 +327,6 @@ public:
     RoutineCall(std::string*             name,
                 Block<Expression*, Node>* argument_list) : name(name),
                                                            argument_list(argument_list) {}
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<");
-    //     result += (name ? *name : "NULL");
-    //     result += "(";
-    //     result += (argument_list ? std::string(*argument_list ) : "NULL") + ")>";
-    //     return result;
-    // }
 };
 
 
@@ -448,17 +355,6 @@ public:
     void initSymbolTree(Scope* parent);
 
     std::string toString() const override;
-    
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<if:");
-    //     result += (condition ? ("(" + *condition + ")") : "()");
-    //     result += "then:{";
-    //     if (then_statement) result += *then_statement;
-    //     result += "}";
-    //     if (else_statement) result += *else_statement;
-    //     return result;
-    // }
 };
 
 
@@ -485,16 +381,6 @@ public:
     void initSymbolTree(Scope* parent);
 
     std::string toString() const override;
-    
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<do:(");
-    //     result += (initialization ? (*initialization + ";") : ";");
-    //     result += (condition ? (*condition + ";") : ";");
-    //     if (update) result += *update;
-    //     result += "{" + (body ? std::string(*body) : "") + "}>";
-    //     return result;
-    // }
 };
 
 
@@ -516,14 +402,6 @@ public:
     void initSymbolTree(Scope* parent);
 
     std::string toString() const override;
-
-    // std::string toString() const override
-    // {
-    //     std::string result = std::string("<while:(");
-    //     result += (condition ? (*condition + ")") : ")");
-    //     result += "{" + (body ? (*body + "}>") : "}>");
-    //     return result;
-    // }
 };
 
 
