@@ -22,7 +22,7 @@ PUN     [.;\[\]{}(),]
 %%
 
     /* Comments */
-\/\/.*\n                                        { } 
+\/\/.*                                        { } 
 
     /* Whitespace */
 {s}+                                            { }
@@ -66,7 +66,7 @@ PUN     [.;\[\]{}(),]
 "["                     { return LBRACKET;          }
 "]"                     { return RBRACKET;          }
 "{"                     { return LCURLY;            }
-"}"                     { return RCURLY;            }
+"}"                     { std::cerr << "<RCURLY>" << std::endl; return RCURLY;            }
 "("                     { return LPAREN;            }
 ")"                     { return RPAREN;            }
 ","                     { return COMMA;             }
@@ -97,6 +97,6 @@ PUN     [.;\[\]{}(),]
 ({a}|[_$])({w}|[$])*    { yylval.s_val = new std::string(yytext, yyleng); return IDENTIFIER; }
 
     /* End of File */
-<<EOF>>                 { return EOF; return 0; }
+<<EOF>>                 { return EOF; }
 
 %%
