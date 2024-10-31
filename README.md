@@ -1,10 +1,10 @@
-# ByteMe Lexer
+# Morph Lexer
 
 ## Project Overview
 This project is a lexer designed for a custom language (F24). The lexer reads the source code, processes keywords, operators, punctuation, and identifiers, and returns corresponding tokens. It uses `flex` to define lexical rules and process input.
 
 ## Repository URL
-You can find the project repository at: [ByteMe GitHub](https://github.com/cojoda/ByteMe.git).
+You can find the project repository at: [Morph GitHub](https://github.com/cojoda/Morph.git).
 
 ## How to Build and Run
 
@@ -20,20 +20,20 @@ make
 ```
 
 This will:
-- Compile the `byte.cpp` and `lexer.cpp` source files.
-- Generate an executable named `byte` in the `bin/` directory.
+- Compile the `morph.cpp` and `lexer.cpp` source files.
+- Generate an executable named `morph` in the `bin/` directory.
 
 ### Running the Lexer
 Once built, you can run the lexer on example files located in the `examples/` directory. For example, to process the `brain.f24` file and display the output, use the following command:
 
 ```bash
-./bin/byte < examples/brain.f24
+./bin/morph < examples/brain.f24
 ```
 
 If you'd like to save the output to a file, you can redirect it like this:
 
 ```bash
-./bin/byte < examples/brain.f24 > output.txt
+./bin/morph < examples/brain.f24 > output.txt
 ```
 
 You can replace `brain.f24` with `small.f24` or `mg.f24` to run other examples.

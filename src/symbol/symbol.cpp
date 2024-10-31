@@ -1,5 +1,3 @@
-
-
 #include "src/symbol/symbol.hpp"
 
 
@@ -107,6 +105,7 @@ std::string SymbolTable::toString() const
     std::string off = getOffset(depth + 1);
     std::string result = std::string(off + "symbol table:");
 
+    if (!table.size()) return result + "\n\t" + off + "empty";
     for (auto pair : table) {
         std::string* key = pair.first;
         Symbol*    value = pair.second;

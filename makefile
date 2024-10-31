@@ -17,10 +17,10 @@ CXXFLAGS := --std=c++11 $(FLEX_INCLUDE) $(CXXINCLUDE)
 
 
 
-# ByteMe
+# Morph
 
-bin/byte: bin obj/symbol.o obj/ast.o obj/lexer.o obj/parser.o obj/byte.o
-	$(CXX) $(CXXFLAGS) obj/symbol.o obj/ast.o obj/lexer.o obj/parser.o obj/byte.o -o bin/byte
+bin/morph: bin obj/symbol.o obj/ast.o obj/lexer.o obj/parser.o obj/morph.o
+	$(CXX) $(CXXFLAGS) obj/symbol.o obj/ast.o obj/lexer.o obj/parser.o obj/morph.o -o bin/morph
 
 bin:
 	mkdir bin
@@ -41,8 +41,8 @@ obj/lexer.o: obj src/lexer/lexer.cpp src/parser/parser.hpp src/lexer/token.hpp
 obj/parser.o: obj src/parser/parser.cpp src/parser/parser.hpp src/ast/ast.hpp
 	$(CXX) $(CXXFLAGS) -c src/parser/parser.cpp -o obj/parser.o
 
-obj/byte.o: obj src/byte.cpp
-	$(CXX) $(CXXFLAGS) -c src/byte.cpp -o obj/byte.o
+obj/morph.o: obj src/morph.cpp
+	$(CXX) $(CXXFLAGS) -c src/morph.cpp -o obj/morph.o
 
 obj:
 	mkdir obj
@@ -69,12 +69,18 @@ clean:
 	clear && clear
 	
 
-test-mg: clean bin/byte
-	bin/byte < examples/mg.f24
+test: clean bin/morph
+	bin/morph < examples/mg.f24
+
+test-conflicts: src/parser/parser.y
+	@/opt/homebrew/opt/bison/bin/bison -d src/parser/parser.y -o src/parser/parser.cpp \
+    2>&1 | tee /tmp/bison_output.txt | grep -iE 'shift/reduce|reduce/reduce' \
+    | sed -nE 's/.*(warning: [0-9]+ (shift|reduce)\/reduce conflict[s]?).*/\1/p'; \
+    if [ ! -s /tmp/bison_output.txt ]; then echo "No shift/reduce or reduce/reduce conflicts found."; fi
 
 # Test parser grammar for conflicts & test against all functions/procedures in mg.f24
 GRAMMAR_TESTS := $(wildcard tests/grammar/*.f24)
-test-grammar: bin/byte $(GRAMMAR_TESTS)
+test-grammar: bin/morph $(GRAMMAR_TESTS)
 	@echo $(shell make -s clean)
 	@echo $(shell make -s)
 	clear && clear
@@ -83,7 +89,7 @@ test-grammar: bin/byte $(GRAMMAR_TESTS)
     | sed -nE 's/.*(warning: [0-9]+ (shift|reduce)\/reduce conflict[s]?).*/\1/p'; \
     if [ ! -s /tmp/bison_output.txt ]; then echo "No shift/reduce or reduce/reduce conflicts found."; fi
 	@for testfile in $(GRAMMAR_TESTS); do \
-		echo "Running $$testfile" && bin/byte < $$testfile || exit 1; \
+		echo "Running $$testfile" && bin/morph < $$testfile || exit 1; \
 	done
 	@echo "All tests passed!"
 	
