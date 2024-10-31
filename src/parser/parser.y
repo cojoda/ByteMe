@@ -182,7 +182,7 @@ statement_scope
     ;
 
 statement
-    : polytype_declaration                                              { $$ = $1; }
+    : polytype_declaration                                              { $$ = new PolyTypeDec($1); }
     | expression                                                        { $$ = $1; }
     | K_RETURN                                                          { $$ = new Return(); }
     | K_RETURN expression                                               { $$ = new Return($2); }
@@ -218,7 +218,7 @@ do
     ;
 
 do_init
-    : polytype_declaration                                              { $$ = $1; }
+    : polytype_declaration                                              { $$ = new PolyTypeDec($1); }
     | uni_declaration_list                                              { $$ = $1; }
     | %empty                                                            { $$ = nullptr; }
     ;

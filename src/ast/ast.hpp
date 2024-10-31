@@ -186,6 +186,20 @@ public:
 
 
 
+class PolyTypeDec : public virtual Statement
+{
+protected:
+    Block<Declaration*, Statement>* polydeclaration_list;
+public:
+    PolyTypeDec(Block<Declaration*, Statement>* polydeclaration_list) : polydeclaration_list(polydeclaration_list) {}
+
+    virtual ~PolyTypeDec() = default;
+
+    void initSymbolTree(Scope* parent);
+};
+
+
+
 
 class UniDec : public virtual Node
 {

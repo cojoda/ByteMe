@@ -9,7 +9,7 @@ std::string getOffset(int depth);
     /* Node */
 
 void Node::initSymbolTree() {}
-void Node::initSymbolTree(Scope* scope) {}
+void Node::initSymbolTree(Scope* scope) { }
 
 std::string Node::toString() const { return std::string(); }
 
@@ -92,6 +92,16 @@ std::string Routine::toString() const
     result +=           (scope ? scope->toString()    : "<MULL_SCOPE>"); 
     result +=           (body  ? body->toString()     : "<NULL_BODY>");
     return result;
+}
+
+
+
+void PolyTypeDec::initSymbolTree(Scope* scope)
+{
+    std::vector <Declaration*>* declaration_list = polydeclaration_list->getList();
+    for (Declaration* declaration : *declaration_list) {
+        if (declaration) declaration->initSymbolTree(scope);
+    }
 }
 
 

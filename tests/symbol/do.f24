@@ -1,0 +1,11 @@
+program do_test
+{
+    procedure do_test_proc()
+    {
+        integer a := 9;
+        do (integer x := 0; x < 5; x++)
+        {
+            print(x);
+        }
+    }
+}
