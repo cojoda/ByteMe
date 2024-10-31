@@ -10,6 +10,8 @@
 
 
 
+std::string getOffset(int depth);
+
 class Routine;
 class Declaration;
 

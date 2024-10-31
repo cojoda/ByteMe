@@ -4,7 +4,6 @@ class Routine;
 
 
 
-std::string getOffset(int depth);
 
     /* Node */
 
@@ -83,12 +82,13 @@ void Routine::initSymbolTree(Scope* parent)
 
 std::string Routine::toString() const
 {
-    std::string off = "";
-    if (scope) off = getOffset(scope->depth);
+    std::string off = "\n";
+    if (scope) off += getOffset(scope->depth);
 
-    std::string result = std::string("\n" + off);
-    result +=           (type  ? "function:" + *type  : "procedure:")  + "\n\t" + off;
-    result += "name:" + (name  ? *name                : "<NULL_NAME>") + "\n\t" + off;
+    std::string result = std::string(off);
+    result +=           (type  ? "function:"          : "procedure:")  + off + '\t';
+    if (type) result +=          "return type:" + *type                + off + '\t';
+    result += "name:" + (name  ? *name                : "<NULL_NAME>") + off + '\t';
     result +=           (scope ? scope->toString()    : "<MULL_SCOPE>"); 
     result +=           (body  ? body->toString()     : "<NULL_BODY>");
     return result;
