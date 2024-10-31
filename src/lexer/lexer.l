@@ -66,7 +66,7 @@ PUN     [.;\[\]{}(),]
 "["                     { return LBRACKET;          }
 "]"                     { return RBRACKET;          }
 "{"                     { return LCURLY;            }
-"}"                     { std::cerr << "<RCURLY>" << std::endl; return RCURLY;            }
+"}"                     { return RCURLY;            }
 "("                     { return LPAREN;            }
 ")"                     { return RPAREN;            }
 ","                     { return COMMA;             }
