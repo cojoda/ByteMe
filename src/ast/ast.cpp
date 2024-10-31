@@ -3,6 +3,9 @@
 class Routine;
 
 
+
+std::string getOffset(int depth);
+
     /* Node */
 
 void Node::initSymbolTree() {}
@@ -46,11 +49,14 @@ void Program::initSymbolTree()
 
 std::string Program::toString() const
 {
-    std::string result = std::string("<program:\n\t");
-    result += (name  ? *name             : "<NULL_NAME>")  + "\n\t";
-    result += (scope ? scope->toString() : "<NULL_SCOPE>") + "\n";
-    result += (body  ? body->toString()  : "<NULL_BODY>")  + "\n";
-    return result + ">";
+    std::string off = "";
+    if (scope) off = getOffset(scope->depth);
+
+    std::string result = std::string(off + "program:\n\t" + off);
+    result += "name:" + (name  ? *name             : "<NULL_NAME>") + "\n\t" + off ;
+    result +=           (scope ? scope->toString() : "<NULL_SCOPE>");
+    result +=           (body  ? body->toString()  : "<NULL_BODY>");
+    return result;
 }
 
 
@@ -77,12 +83,15 @@ void Routine::initSymbolTree(Scope* parent)
 
 std::string Routine::toString() const
 {
-    std::string result = std::string();
-    result += (type  ? "<function:" + *type : "<procedure:") + "\n\t";
-    result += (name  ? *name                : "<NULL_NAME>") + "\n\t";
-    result += (scope ? scope->toString()    : "<MULL_SCOPE>") + "\n\t";
-    result += (body  ? body->toString()     : "<NULL_BODY>");
-    return result + ">";
+    std::string off = "";
+    if (scope) off = getOffset(scope->depth);
+
+    std::string result = std::string("\n" + off);
+    result +=           (type  ? "function:" + *type  : "procedure:")  + "\n\t" + off;
+    result += "name:" + (name  ? *name                : "<NULL_NAME>") + "\n\t" + off;
+    result +=           (scope ? scope->toString()    : "<MULL_SCOPE>"); 
+    result +=           (body  ? body->toString()     : "<NULL_BODY>");
+    return result;
 }
 
 
@@ -102,9 +111,12 @@ void IfStatement::initSymbolTree(Scope* parent)
 
 std::string IfStatement::toString() const
 {
-    std::string result = std::string("\n\t<if:");
-    result += "\n\t" + (scope ? scope->toString() : "<NULL_SCOPE>");
-    return result + ">";
+    std::string off = "";
+    if (scope) off = getOffset(scope->depth);
+
+    std::string result = std::string("\n" + off + "if:" + "\n\t" + off);
+    result += (scope ? scope->toString() : "<NULL_SCOPE>");
+    return result;
 }
 
 
@@ -117,9 +129,12 @@ void DoStatement::initSymbolTree(Scope* parent)
 
 std::string DoStatement::toString() const
 {
-    std::string result = std::string("\n\t<do:");
-    result += "\n\t" + (scope ? scope->toString() : "<NULL_SCOPE>");
-    return result + ">";
+    std::string off = "";
+    if (scope) off = getOffset(scope->depth);
+
+    std::string result = std::string("\n" + off + "do:" + "\n\t" + off);
+    result += (scope ? scope->toString() : "<NULL_SCOPE>");
+    return result;
 }
 
 void WhileStatement::initSymbolTree(Scope* parent)
@@ -130,9 +145,12 @@ void WhileStatement::initSymbolTree(Scope* parent)
 
 std::string WhileStatement::toString() const
 {
-    std::string result = std::string("\n\t<do_while:");
-    result += "\n\t" + (scope ? scope->toString() : "<NULL_SCOPE>");
-    return result + ">";
+    std::string off = "";
+    if (scope) off = getOffset(scope->depth);
+
+    std::string result = std::string("\n" + off + "do_while:" + "\n\t" + off);
+    result += (scope ? scope->toString() : "<NULL_SCOPE>");
+    return result;
 }
 
 

@@ -4,21 +4,28 @@
 
 
 
+std::string getOffset(int depth)
+{
+    std::string offset = std::string();
+    for (int i = 0; i < depth; i++) offset += "\t";
+    return offset;
+}
+
+
+
+
     /* Scope */
 
 Scope::Scope(Scope* parent) : parent(parent),
-                              depth(parent->depth + 1) {}
+                              depth(parent->depth + 1) { symbol_table.setDepth(depth); }
 
 std::string Scope::toString() const
 {
-    std::string result = std::string("<scope\n\tdepth:" + std::to_string(depth));
-    return  result + "\n" + symbol_table.toString();
+    std::string result = std::string("depth:" + std::to_string(depth));
+    return result + "\n" + symbol_table.toString();
 }
 
-void Scope::print(std::ostream& os) const
-{
-    os << toString();
-}
+void Scope::print(std::ostream& os) const { os << toString(); }
 
 
 std::ostream& operator<<(std::ostream& os, const Scope& scope)
@@ -54,7 +61,7 @@ std::string* Symbol::getName() { return name; }
 
 std::string Symbol::toString() const
 {
-    return + "<" + *type + ":" + *name + ">";
+    return *type + ":" + *name;
 }
 
 void Symbol::print(std::ostream& os) const { os << toString(); }
@@ -97,17 +104,19 @@ Symbol* SymbolTable::lookup(std::string* name)
 
 std::string SymbolTable::toString() const
 {
-    std::string result = std::string("<symbol table:");
+    std::string off = getOffset(depth + 1);
+    std::string result = std::string(off + "symbol table:");
 
     for (auto pair : table) {
         std::string* key = pair.first;
         Symbol*    value = pair.second;
-        result += + "\n\t" + *key + ":" + value->toString();
+        result += + "\n\t" + off + value->toString();
     }
-    return result + ">";
+    return result;
 }
 
-void SymbolTable::print(std::ostream& os) const { os << toString(); }
+void SymbolTable::print(std::ostream& os) const
+{ os << toString(); }
 
 std::ostream& operator<<(std::ostream& os, const SymbolTable& symbol_table)
 {
@@ -148,6 +157,8 @@ void SymbolStack::exitScope()
 {
     scope_stack.pop_back();
 }
+
+
 
 
 

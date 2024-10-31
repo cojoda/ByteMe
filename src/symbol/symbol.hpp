@@ -29,11 +29,13 @@ public:
 
 
 
-class SymbolTable 
+class SymbolTable
 {
 private:
     std::unordered_map<std::string*, Symbol*> table
             = std::unordered_map<std::string*, Symbol*>();
+
+    int depth = 0;
 
 public:
     SymbolTable() = default;
@@ -42,6 +44,8 @@ public:
     void insert(Symbol* symbol);
 
     Symbol* lookup(std::string* name);
+
+    void setDepth(int depth) { this->depth = depth; }
 
     std::string toString() const;
     void print(std::ostream& os) const;
